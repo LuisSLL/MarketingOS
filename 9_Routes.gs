@@ -96,8 +96,14 @@ var Router = {
 // ==========================================
 // Rutas
 // ==========================================
-Route.get('', 'Home@index');
-Route.get('home', 'Home@index');
+
+// El login es ahora la puerta de entrada de la app.
+// Ajustá 'login' si tu método en Ctrl_Auth.gs se llama distinto.
+Route.get('', 'Auth@login');
+Route.get('home', 'Auth@login');
+
+// Panel del Super Admin (ex Ctrl_Home, ahora Ctrl_SuperAdmin)
+Route.get('dashboard', 'SuperAdmin@index');
 
 // Agregá tus propias rutas acá, por ejemplo:
 // Route.get('productos', 'Productos@index');
