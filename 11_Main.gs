@@ -49,3 +49,4 @@ function ejecutarController(ruta, params) {
 }
 
 Logger.log('🚀 ' + (typeof CONFIG !== 'undefined' ? CONFIG.APP_NAME : 'App') + ' iniciada');
+
