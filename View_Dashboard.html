@@ -1,0 +1,119 @@
+<!-- DASHBOARD HEADER -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <span class="inline-flex items-center gap-2 rounded-full border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/30 px-3 py-1 text-xs font-medium text-brand-700 dark:text-brand-300">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM4 12h16v8H4z"/></svg>
+        Panel principal
+      </span>
+      <h1 class="mt-3 font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
+        Dashboard
+      </h1>
+      <p class="mt-1 text-sm sm:text-base text-slate-500 dark:text-slate-400">
+        Vista general de <?= appName ?>.
+      </p>
+    </div>
+
+    <a href="<?= scriptUrl ?>" class="inline-flex items-center gap-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 py-2.5 text-sm shadow-md shadow-brand-500/30 transition-colors">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+      Nuevo
+    </a>
+  </div>
+</section>
+
+<!-- TARJETAS DE MÉTRICAS -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Usuarios</span>
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+      </div>
+      <div class="mt-3 font-display text-2xl font-bold text-slate-900 dark:text-white">128</div>
+      <div class="mt-1 text-xs text-emerald-600 dark:text-emerald-400">+4.2% esta semana</div>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Ventas</span>
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+      </div>
+      <div class="mt-3 font-display text-2xl font-bold text-slate-900 dark:text-white">$ 4.980</div>
+      <div class="mt-1 text-xs text-emerald-600 dark:text-emerald-400">+12% vs. mes anterior</div>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Pedidos</span>
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+        </div>
+      </div>
+      <div class="mt-3 font-display text-2xl font-bold text-slate-900 dark:text-white">37</div>
+      <div class="mt-1 text-xs text-slate-400 dark:text-slate-500">Últimas 24 horas</div>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Pendientes</span>
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        </div>
+      </div>
+      <div class="mt-3 font-display text-2xl font-bold text-slate-900 dark:text-white">5</div>
+      <div class="mt-1 text-xs text-amber-600 dark:text-amber-400">Requieren atención</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ACTIVIDAD RECIENTE -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+  <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+    <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+      <h2 class="font-display font-semibold text-slate-900 dark:text-white">Actividad reciente</h2>
+      <span class="text-xs text-slate-400 dark:text-slate-500">Datos de ejemplo</span>
+    </div>
+    <div class="divide-y divide-slate-100 dark:divide-slate-800">
+
+      <div class="px-5 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 text-sm font-semibold">JP</span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">Juan Pérez creó un nuevo registro</p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Hace 5 minutos</p>
+          </div>
+        </div>
+        <span class="shrink-0 text-xs font-medium rounded-full px-2.5 py-1 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Completado</span>
+      </div>
+
+      <div class="px-5 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 text-sm font-semibold">MG</span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">María Gómez actualizó un pedido</p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Hace 32 minutos</p>
+          </div>
+        </div>
+        <span class="shrink-0 text-xs font-medium rounded-full px-2.5 py-1 bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">En proceso</span>
+      </div>
+
+      <div class="px-5 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 text-sm font-semibold">LR</span>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">Luis Rodríguez canceló un registro</p>
+            <p class="text-xs text-slate-400 dark:text-slate-500">Hace 2 horas</p>
+          </div>
+        </div>
+        <span class="shrink-0 text-xs font-medium rounded-full px-2.5 py-1 bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">Cancelado</span>
+      </div>
+
+    </div>
+  </div>
+</section>
