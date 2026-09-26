@@ -8,13 +8,13 @@
 
 var CONFIG = {
 
-  APP_NAME: 'MiApp',
+  APP_NAME: 'MarketingOS',
 
-  APP_TAGLINE: 'Framework MVC · Google Apps Script',
+  APP_TAGLINE: 'Bolivia Saas',
 
   // ID del Spreadsheet que actúa como base de datos.
   // Dejalo vacío ('') para usar la hoja activa del proyecto.
-  SPREADSHEET_ID: '',
+  SPREADSHEET_ID: '1nmagQxWkjN55le_3OWifJXhk7xuzVs68aJXB1I6ldFk',
 
   // Catálogo de tablas (hojas). Agregá una entrada por cada
   // hoja que necesites, ej: USERS: 'USERS'
