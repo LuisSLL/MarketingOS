@@ -1,119 +1,244 @@
-<!-- DASHBOARD HEADER -->
-<section class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 pb-6">
-  <div class="flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <span class="inline-flex items-center gap-2 rounded-full border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/30 px-3 py-1 text-xs font-medium text-brand-700 dark:text-brand-300">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM4 12h16v8H4z"/></svg>
-        Panel principal
-      </span>
-      <h1 class="mt-3 font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">
-        Dashboard
-      </h1>
-      <p class="mt-1 text-sm sm:text-base text-slate-500 dark:text-slate-400">
-        Vista general de <?= appName ?>.
-      </p>
-    </div>
-
-    <a href="<?= scriptUrl ?>" class="inline-flex items-center gap-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium px-4 py-2.5 text-sm shadow-md shadow-brand-500/30 transition-colors">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
-      Nuevo
-    </a>
+<!-- ENCABEZADO DE LA PÁGINA -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-8">
+  <div>
+    <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Panel de Super Admin</h1>
+    <p class="mt-1 text-slate-400 text-sm">
+      Resumen y gestión de suscripciones • Bolivia
+    </p>
   </div>
-</section>
 
-<!-- TARJETAS DE MÉTRICAS -->
-<section class="max-w-6xl mx-auto px-4 sm:px-6 pb-6">
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-
-    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Usuarios</span>
-        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-      </div>
-      <div class="mt-3 font-display text-2xl font-bold text-slate-900 dark:text-white">128</div>
-      <div class="mt-1 text-xs text-emerald-600 dark:text-emerald-400">+4.2% esta semana</div>
-    </div>
-
-    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Ventas</span>
-        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-      </div>
-      <div class="mt-3 font-display text-2xl font-bold text-slate-900 dark:text-white">$ 4.980</div>
-      <div class="mt-1 text-xs text-emerald-600 dark:text-emerald-400">+12% vs. mes anterior</div>
-    </div>
-
-    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Pedidos</span>
-        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
-        </div>
-      </div>
-      <div class="mt-3 font-display text-2xl font-bold text-slate-900 dark:text-white">37</div>
-      <div class="mt-1 text-xs text-slate-400 dark:text-slate-500">Últimas 24 horas</div>
-    </div>
-
-    <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">Pendientes</span>
-        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-        </div>
-      </div>
-      <div class="mt-3 font-display text-2xl font-bold text-slate-900 dark:text-white">5</div>
-      <div class="mt-1 text-xs text-amber-600 dark:text-amber-400">Requieren atención</div>
-    </div>
-
+  <!-- Selector de Fecha -->
+  <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-300 text-xs md:text-sm w-fit">
+    <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+    <span>Hoy · 25 sept 2024 · La Paz</span>
   </div>
-</section>
+</div>
 
-<!-- ACTIVIDAD RECIENTE -->
-<section class="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
-  <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
-    <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-      <h2 class="font-display font-semibold text-slate-900 dark:text-white">Actividad reciente</h2>
-      <span class="text-xs text-slate-400 dark:text-slate-500">Datos de ejemplo</span>
+<!-- TARJETAS DE MÉTRICAS (1 col en móvil, 2 en tablet, 4 en desktop) -->
+<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+  <!-- MRR -->
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-900/50 text-indigo-400">
+        <i data-lucide="dollar-sign" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">MRR</span>
     </div>
-    <div class="divide-y divide-slate-100 dark:divide-slate-800">
-
-      <div class="px-5 py-4 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-3 min-w-0">
-          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 text-sm font-semibold">JP</span>
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">Juan Pérez creó un nuevo registro</p>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Hace 5 minutos</p>
-          </div>
-        </div>
-        <span class="shrink-0 text-xs font-medium rounded-full px-2.5 py-1 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">Completado</span>
-      </div>
-
-      <div class="px-5 py-4 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-3 min-w-0">
-          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 text-sm font-semibold">MG</span>
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">María Gómez actualizó un pedido</p>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Hace 32 minutos</p>
-          </div>
-        </div>
-        <span class="shrink-0 text-xs font-medium rounded-full px-2.5 py-1 bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">En proceso</span>
-      </div>
-
-      <div class="px-5 py-4 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-3 min-w-0">
-          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 text-sm font-semibold">LR</span>
-          <div class="min-w-0">
-            <p class="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">Luis Rodríguez canceló un registro</p>
-            <p class="text-xs text-slate-400 dark:text-slate-500">Hace 2 horas</p>
-          </div>
-        </div>
-        <span class="shrink-0 text-xs font-medium rounded-full px-2.5 py-1 bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">Cancelado</span>
-      </div>
-
+    <div class="text-xl md:text-2xl font-bold text-white">Bs 5.100</div>
+    <div class="mt-1 text-xs text-emerald-400 flex items-center gap-1">
+      <i data-lucide="trending-up" class="w-3 h-3"></i>
+      +12% vs mes ant.
     </div>
   </div>
-</section>
+
+  <!-- Pagados -->
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-900/50 text-emerald-400">
+        <i data-lucide="check-circle" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Pagados</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white">11</div>
+    <div class="mt-1 text-xs text-slate-500">clientes activos</div>
+  </div>
+
+  <!-- Por Vencer -->
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-amber-900/50 text-amber-400">
+        <i data-lucide="clock" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Por Vencer</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white">2</div>
+    <div class="mt-1 text-xs text-amber-400">vencen en 7 días</div>
+  </div>
+
+  <!-- Bloqueados -->
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-rose-900/50 text-rose-400">
+        <i data-lucide="slash" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Bloqueados</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white">2</div>
+    <div class="mt-1 text-xs text-rose-400">requieren atención</div>
+  </div>
+</div>
+
+<!-- TABLA DE CLIENTES -->
+<div class="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+  <div class="px-4 md:px-5 py-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <h2 class="font-semibold text-white">Clientes y Suscripciones</h2>
+    <div class="flex items-center gap-2 w-full sm:w-auto">
+      <div class="relative flex-1 sm:flex-none">
+        <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+        <input type="text" placeholder="Buscar..." class="bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 w-full sm:w-48">
+      </div>
+      <button class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap">
+        <i data-lucide="plus" class="w-3 h-3"></i>
+        Nuevo
+      </button>
+    </div>
+  </div>
+  
+  <!-- Scroll Horizontal en Móvil -->
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-xs min-w-[800px]">
+      <thead class="bg-slate-950/50 text-slate-500 uppercase tracking-wider font-medium">
+        <tr>
+          <th class="px-4 md:px-5 py-3">Cliente</th>
+          <th class="px-4 md:px-5 py-3">Ciudad</th>
+          <th class="px-4 md:px-5 py-3">Plan</th>
+          <th class="px-4 md:px-5 py-3">Vence</th>
+          <th class="px-4 md:px-5 py-3">Estado</th>
+          <th class="px-4 md:px-5 py-3">Monto</th>
+          <th class="px-4 md:px-5 py-3">Método</th>
+          <th class="px-4 md:px-5 py-3 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-800">
+        <!-- Fila 1 -->
+        <tr class="hover:bg-slate-800/30 transition-colors">
+          <td class="px-4 md:px-5 py-3">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
+                <i data-lucide="building-2" class="w-3 h-3"></i>
+              </div>
+              <span class="font-medium text-slate-200 whitespace-nowrap">Empresa Andina SRL</span>
+            </div>
+          </td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">La Paz</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-900/30 text-purple-300 border border-purple-800/50 whitespace-nowrap">Profesional</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">25 sept 2024</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>Pagado</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 800</td>
+          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="circle-dollar-sign" class="w-3 h-3"></i> USDT</span></td>
+          <td class="px-4 md:px-5 py-3 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
+              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Fila 2 -->
+        <tr class="hover:bg-slate-800/30 transition-colors">
+          <td class="px-4 md:px-5 py-3">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
+                <i data-lucide="building-2" class="w-3 h-3"></i>
+              </div>
+              <span class="font-medium text-slate-200 whitespace-nowrap">TecnoBol Ltda</span>
+            </div>
+          </td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">Santa Cruz</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-900/30 text-blue-300 border border-blue-800/50 whitespace-nowrap">Starter</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">28 sept 2024</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-900/30 text-amber-400 border border-amber-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>Por Vencer</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 400</td>
+          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="qr-code" class="w-3 h-3"></i> QR</span></td>
+          <td class="px-4 md:px-5 py-3 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
+              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Fila 3 -->
+        <tr class="hover:bg-slate-800/30 transition-colors">
+          <td class="px-4 md:px-5 py-3">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
+                <i data-lucide="building-2" class="w-3 h-3"></i>
+              </div>
+              <span class="font-medium text-slate-200 whitespace-nowrap">AgroValle SA</span>
+            </div>
+          </td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">Cochabamba</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-fuchsia-900/30 text-fuchsia-300 border border-fuchsia-800/50 whitespace-nowrap">Empresarial</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">22 sept 2024</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-rose-900/30 text-rose-400 border border-rose-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>Bloqueado</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 1500</td>
+          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="arrow-right-left" class="w-3 h-3"></i> Transf.</span></td>
+          <td class="px-4 md:px-5 py-3 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
+              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
+            </div>
+          </td>
+        </tr>
+         <!-- Fila 4 -->
+         <tr class="hover:bg-slate-800/30 transition-colors">
+          <td class="px-4 md:px-5 py-3">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
+                <i data-lucide="building-2" class="w-3 h-3"></i>
+              </div>
+              <span class="font-medium text-slate-200 whitespace-nowrap">Creativa Labs</span>
+            </div>
+          </td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">Santa Cruz</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-900/30 text-blue-300 border border-blue-800/50 whitespace-nowrap">Starter</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">30 sept 2024</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>Pagado</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 300</td>
+          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="circle-dollar-sign" class="w-3 h-3"></i> USDT</span></td>
+          <td class="px-4 md:px-5 py-3 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
+              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
+            </div>
+          </td>
+        </tr>
+         <!-- Fila 5 -->
+         <tr class="hover:bg-slate-800/30 transition-colors">
+          <td class="px-4 md:px-5 py-3">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
+                <i data-lucide="building-2" class="w-3 h-3"></i>
+              </div>
+              <span class="font-medium text-slate-200 whitespace-nowrap">SolNorte Bolivia</span>
+            </div>
+          </td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">La Paz</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-900/30 text-purple-300 border border-purple-800/50 whitespace-nowrap">Profesional</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">27 sept 2024</td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-900/30 text-amber-400 border border-amber-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>Por Vencer</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 900</td>
+          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="arrow-right-left" class="w-3 h-3"></i> Transf.</span></td>
+          <td class="px-4 md:px-5 py-3 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
+              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Footer de la Tabla / Cobranza -->
+  <div class="px-4 md:px-5 py-3 border-t border-slate-800 bg-slate-900">
+     <div class="flex items-center justify-between text-xs mb-1">
+        <span class="font-medium text-slate-300">Cobranza del Mes — 73% cobrado</span>
+     </div>
+     <div class="flex items-center gap-3">
+        <div class="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-indigo-500 rounded-full" style="width: 73%"></div>
+        </div>
+        <span class="text-xs font-bold text-indigo-400">73%</span>
+     </div>
+     <div class="mt-1 text-[10px] text-slate-500">Bs 3.900 cobrado de Bs 5.100 objetivo</div>
+  </div>
+
+</div>
+
+<script>
+    // Re-inicializar iconos para el contenido inyectado
+    lucide.createIcons();
+</script>
