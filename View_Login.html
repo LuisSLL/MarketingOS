@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es" class="bg-slate-950 text-slate-100">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?= typeof title !== 'undefined' ? title : 'Login - Marketing OS PRO' ?></title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    html, body {
+      margin: 0;
+      min-height: 100vh;
+    }
+    /* Efecto de desenfoque para el fondo */
+    .bg-blur {
+      background: radial-gradient(circle at 20% 30%, rgba(88, 28, 135, 0.4) 0%, transparent 40%),
+                  radial-gradient(circle at 80% 70%, rgba(30, 58, 138, 0.4) 0%, transparent 40%);
+    }
+    /* Efecto Glassmorphism para la tarjeta */
+    .glass-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    /* Estilo para los inputs */
+    .input-glass {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.2s ease;
+    }
+    .input-glass:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+      outline: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center font-sans antialiased bg-slate-950 relative overflow-hidden">
+
+  <!-- FONDO CON GRADIENTES -->
+  <div class="fixed inset-0 bg-blur z-0"></div>
+  <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] z-0"></div>
+  <div class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] z-0"></div>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="relative z-10 w-full max-w-sm px-4 sm:px-0 py-6">
+
+    <!-- TARJETA DE LOGIN -->
+    <div class="glass-card rounded-2xl p-6 shadow-2xl">
+
+      <!-- LOGO Y TÍTULO -->
+      <div class="flex flex-col items-center mb-6">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="relative w-10 h-10 flex items-center justify-center">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-indigo-500">
+              <path d="M5 15L20 5L35 15V35L20 25L5 35V15Z" fill="currentColor" fill-opacity="0.8"/>
+              <path d="M5 15L20 25L35 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            Marketing OS <span class="text-indigo-500 text-xl align-top">PRO</span>
+          </h1>
+        </div>
+
+        <h2 class="text-xl sm:text-2xl font-bold text-white mb-1">Welcome back</h2>
+     
+      </div>
+
+      <!-- FORMULARIO -->
+      <form class="space-y-2">
+
+        <!-- Campo Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i data-lucide="mail" class="w-4 h-4 text-slate-500"></i>
+            </div>
+            <input type="email" id="email" placeholder="you@company.com" class="input-glass w-full rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-slate-500">
+          </div>
+        </div>
+
+        <!-- Campo Password -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i data-lucide="lock" class="w-4 h-4 text-slate-500"></i>
+            </div>
+            <input type="password" id="password" placeholder="••••••••••••" class="input-glass w-full rounded-lg pl-10 pr-10 py-2 text-sm text-white placeholder-slate-500">
+            <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300 transition-colors">
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recordar y Olvidé contraseña -->
+        <div class="flex items-center justify-between text-xs sm:text-sm">
+          <label class="flex items-center gap-2 cursor-pointer group">
+            <input type="checkbox" class="w-4 h-4 rounded border-slate-600 bg-slate-800 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-slate-900">
+            <span class="text-slate-300 group-hover:text-white transition-colors">Remember me</span>
+          </label>
+          <a href="#" class="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">Forgot password?</a>
+        </div>
+
+        <!-- Botón Log in -->
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition-all duration-200 shadow-lg shadow-indigo-600/20 mt-1">
+          Log in
+        </button>
+
+      </form>
+
+      <!-- DIVISOR -->
+      <div class="relative my-6">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-slate-700/50"></div>
+        </div>
+        <div class="relative flex justify-center text-xs uppercase">
+          <span class="bg-slate-900/90 px-3 text-slate-500 backdrop-blur-sm">or continue with</span>
+        </div>
+      </div>
+
+      <!-- BOTÓN GOOGLE -->
+      <button type="button" class="w-full flex items-center justify-center gap-3 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 text-white font-medium py-2.5 rounded-lg transition-colors">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <!-- LINK REGISTRO -->
+      <p class="text-center text-sm text-slate-400 mt-6">
+        Don't have an account?
+        <a href="#" class="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">Sign up</a>
+      </p>
+
+    </div>
+
+    <!-- FOOTER LEGAL -->
+    <div class="text-center mt-6 text-xs text-slate-500 space-x-2">
+      <span>Protected by 256-bit SSL</span>
+      <span class="text-slate-700">•</span>
+      <a href="#" class="hover:text-slate-400 transition-colors">Privacy Policy</a>
+      <span class="text-slate-700">•</span>
+      <a href="#" class="hover:text-slate-400 transition-colors">Terms of Service</a>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
