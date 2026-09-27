@@ -4,29 +4,28 @@
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= typeof title !== 'undefined' ? title : (typeof CONFIG !== 'undefined' ? CONFIG.APP_NAME : 'Bolivia Saas - Admin') ?></title>
+  <title><?= typeof title !== 'undefined' ? title : (typeof CONFIG !== 'undefined' ? CONFIG.APP_NAME : 'MarketingOS') ?></title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #020617; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #334155; }
-
-    /* Transición suave para el sidebar móvil */
     .sidebar-transition { transition: transform 0.3s ease-in-out; }
   </style>
 </head>
 <body class="h-full flex overflow-hidden font-sans antialiased text-sm bg-slate-950">
 
-  <!-- OVERLAY para móvil (cierra el sidebar al hacer clic fuera) -->
+  <!-- OVERLAY para móvil -->
   <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
 
   <!-- SIDEBAR -->
   <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 sidebar-transition -translate-x-full lg:translate-x-0">
     <div class="p-4 space-y-6 overflow-y-auto">
 
-      <!-- LOGO + Botón cerrar en móvil -->
+      <!-- LOGO -->
       <div class="flex items-center justify-between px-2 py-1">
         <div class="flex items-center gap-3">
           <div class="bg-indigo-600 p-2 rounded-xl text-white">
@@ -34,14 +33,13 @@
           </div>
           <div class="flex flex-col">
             <span class="font-bold text-lg text-white tracking-wide">
-              <?= typeof CONFIG !== 'undefined' && CONFIG.APP_NAME ? CONFIG.APP_NAME : 'Bolivia Saas' ?>
+              <?= typeof CONFIG !== 'undefined' && CONFIG.APP_NAME ? CONFIG.APP_NAME : 'MarketingOS' ?>
             </span>
             <span class="bg-indigo-900/60 border border-indigo-700/50 text-indigo-300 text-[10px] font-semibold px-2 py-0.5 rounded-full w-fit mt-0.5">
               Super Admin
             </span>
           </div>
         </div>
-        <!-- Botón X solo visible en móvil -->
         <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
@@ -49,7 +47,7 @@
 
       <!-- MENÚ -->
       <nav class="space-y-1">
-        <a href="<?= typeof WebApp !== 'undefined' ? WebApp.url('dashboard') : '?p=dashboard' ?>" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-indigo-400 bg-indigo-950/50 font-medium transition-colors">
+        <a href="<?= typeof scriptUrl !== 'undefined' ? scriptUrl : '' ?>?p=dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-indigo-400 bg-indigo-950/50 font-medium transition-colors">
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
           Dashboard
         </a>
@@ -87,7 +85,7 @@
 
     <!-- CERRAR SESIÓN -->
     <div class="p-4 border-t border-slate-800">
-      <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-950/30 transition-colors font-medium">
+      <button onclick="cerrarSesion()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-950/30 transition-colors font-medium">
         <i data-lucide="log-out" class="w-4 h-4"></i>
         Cerrar Sesión
       </button>
@@ -100,14 +98,11 @@
     <!-- HEADER -->
     <header class="h-16 border-b border-slate-800 px-4 md:px-8 flex items-center justify-between shrink-0 bg-slate-950/80 backdrop-blur-sm">
 
-      <!-- Botón Hamburguesa (solo móvil) + Título -->
       <div class="flex items-center gap-3">
         <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
-        <div class="text-slate-400 font-medium hidden sm:block">
-          <!-- Título de sección opcional -->
-        </div>
+        <div class="text-slate-400 font-medium hidden sm:block"></div>
       </div>
 
       <div class="flex items-center gap-2 md:gap-4">
@@ -133,13 +128,25 @@
           <span class="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full"></span>
         </button>
 
-        <!-- Perfil (se oculta el email en móvil) -->
+        <!-- Perfil -->
         <div class="flex items-center gap-3 pl-2 border-l border-slate-800">
           <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">
-            SA
+            <? 
+              var iniciales = 'SA';
+              if (typeof user !== 'undefined' && user && user.nombre) {
+                iniciales = user.nombre.split(' ')
+                  .map(function(p) { return p.charAt(0); })
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase();
+              }
+            ?>
+            <?= iniciales ?>
           </div>
           <div class="hidden md:flex flex-col">
-            <span class="font-medium text-slate-200 text-xs">admin@boliviasaas.bo</span>
+            <span class="font-medium text-slate-200 text-xs">
+              <?= (typeof user !== 'undefined' && user && user.email) ? user.email : 'admin@marketingos.bo' ?>
+            </span>
           </div>
           <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 hidden md:block"></i>
         </div>
@@ -156,23 +163,78 @@
   <script>
     lucide.createIcons();
 
-    // Función para abrir/cerrar el sidebar en móvil
+    // ==========================================
+    // TEMA OSCURO PARA SWEETALERT2
+    // ==========================================
+    function swalTheme() {
+      return {
+        buttonsStyling: false,
+        customClass: {
+          popup: '!bg-slate-900 !text-white !rounded-2xl !border !border-slate-800 !shadow-2xl',
+          title: '!text-white !text-xl !font-bold',
+          htmlContainer: '!text-slate-300 !text-sm',
+          confirmButton: '!bg-indigo-600 hover:!bg-indigo-700 !text-white !px-5 !py-2 !rounded-lg !font-medium !transition-colors !ml-2',
+          cancelButton: '!bg-slate-700 hover:!bg-slate-600 !text-white !px-5 !py-2 !rounded-lg !font-medium !transition-colors !mr-2',
+          icon: '!border-0'
+        }
+      };
+    }
+
+    // ==========================================
+    // SIDEBAR MÓVIL
+    // ==========================================
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebar-overlay');
-
       sidebar.classList.toggle('-translate-x-full');
       overlay.classList.toggle('hidden');
     }
 
-    // Cerrar sidebar al hacer clic en un enlace (móvil)
     document.querySelectorAll('#sidebar nav a').forEach(link => {
       link.addEventListener('click', () => {
-        if (window.innerWidth < 1024) { // lg breakpoint
-          toggleSidebar();
-        }
+        if (window.innerWidth < 1024) toggleSidebar();
       });
     });
+
+    // ==========================================
+    // CERRAR SESIÓN (patrón GASVEL + SweetAlert2)
+    // ==========================================
+    function cerrarSesion() {
+      Swal.fire(Object.assign(swalTheme(), {
+        icon: 'warning',
+        title: '¿Cerrar sesión?',
+        text: 'Volverás a la pantalla de inicio de sesión.',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cerrar sesión',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+      })).then(function(result) {
+        if (!result.isConfirmed) return;
+
+        // Spinner mientras el servidor procesa
+        Swal.fire(Object.assign(swalTheme(), {
+          title: 'Cerrando sesión...',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: function() { Swal.showLoading(); }
+        }));
+
+        google.script.run
+          .withSuccessHandler(function(response) {
+            var data = response;
+            if (typeof response === 'string') {
+              try { data = JSON.parse(response); } catch (e) { data = {}; }
+            }
+            var url = (data && data.url) ? data.url : '<?= scriptUrl ?>?p=login';
+            window.top.location.href = url;
+          })
+          .withFailureHandler(function() {
+            window.top.location.href = '<?= scriptUrl ?>?p=login';
+          })
+          .logout();
+      });
+    }
   </script>
 </body>
 </html>
