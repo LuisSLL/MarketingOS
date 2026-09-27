@@ -24,9 +24,24 @@ function doPost(e) {
 }
 
 /**
+ * Wrapper global para login desde google.script.run.
+ * (google.script.run solo llama funciones globales, no clases)
+ */
+function Auth_login(payload) {
+  var ctrl = new Ctrl_Auth();
+  return ctrl.autenticar(payload);
+}
+
+/**
+ * Wrapper global para logout desde google.script.run.
+ */
+function Auth_logout(token) {
+  var ctrl = new Ctrl_Auth();
+  return ctrl.logout(token);
+}
+
+/**
  * Ejecuta un método de controlador por nombre ("Controlador@metodo").
- * Útil para llamar controladores desde google.script.run del lado cliente
- * sin pasar por el Router HTTP.
  */
 function ejecutarController(ruta, params) {
   try {
@@ -49,4 +64,3 @@ function ejecutarController(ruta, params) {
 }
 
 Logger.log('🚀 ' + (typeof CONFIG !== 'undefined' ? CONFIG.APP_NAME : 'App') + ' iniciada');
-
