@@ -7,17 +7,13 @@
   <title><?= typeof title !== 'undefined' ? title : 'Marketing OS PRO' ?></title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    /* Scrollbar personalizada */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #020617; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #334155; }
-
-    /* Transición para el sidebar móvil */
     .sidebar-transition { transition: transform 0.3s ease-in-out; }
-
-    /* Ocultar scrollbar en el Kanban horizontal */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -107,6 +103,14 @@
         </div>
       </div>
     </div>
+
+    <!-- CERRAR SESIÓN -->
+    <div class="p-4 border-t border-slate-800">
+      <button onclick="cerrarSesion()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-950/30 transition-colors font-medium">
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+        Cerrar Sesión
+      </button>
+    </div>
   </aside>
 
   <!-- ÁREA PRINCIPAL -->
@@ -119,7 +123,6 @@
         <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
           <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
-        <!-- Título móvil -->
         <span class="font-bold text-white lg:hidden">Marketing OS PRO</span>
       </div>
 
@@ -162,11 +165,77 @@
   <script>
     lucide.createIcons();
 
+    // ==========================================
+    // TEMA OSCURO PARA SWEETALERT2
+    // ==========================================
+    function swalTheme() {
+      return {
+        buttonsStyling: false,
+        customClass: {
+          popup: '!bg-slate-900 !text-white !rounded-2xl !border !border-slate-800 !shadow-2xl',
+          title: '!text-white !text-xl !font-bold',
+          htmlContainer: '!text-slate-300 !text-sm',
+          confirmButton: '!bg-indigo-600 hover:!bg-indigo-700 !text-white !px-5 !py-2 !rounded-lg !font-medium !transition-colors !ml-2',
+          cancelButton: '!bg-slate-700 hover:!bg-slate-600 !text-white !px-5 !py-2 !rounded-lg !font-medium !transition-colors !mr-2',
+          icon: '!border-0'
+        }
+      };
+    }
+
+    // ==========================================
+    // SIDEBAR MÓVIL
+    // ==========================================
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const overlay = document.getElementById('sidebar-overlay');
       sidebar.classList.toggle('-translate-x-full');
       overlay.classList.toggle('hidden');
+    }
+
+    document.querySelectorAll('#sidebar nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) toggleSidebar();
+      });
+    });
+
+    // ==========================================
+    // CERRAR SESIÓN (patrón GASVEL + SweetAlert2)
+    // ==========================================
+    function cerrarSesion() {
+      Swal.fire(Object.assign(swalTheme(), {
+        icon: 'warning',
+        title: '¿Cerrar sesión?',
+        text: 'Volverás a la pantalla de inicio de sesión.',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cerrar sesión',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+      })).then(function(result) {
+        if (!result.isConfirmed) return;
+
+        // Mostrar spinner mientras el servidor procesa
+        Swal.fire(Object.assign(swalTheme(), {
+          title: 'Cerrando sesión...',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: function() { Swal.showLoading(); }
+        }));
+
+        google.script.run
+          .withSuccessHandler(function(response) {
+            var data = response;
+            if (typeof response === 'string') {
+              try { data = JSON.parse(response); } catch (e) { data = {}; }
+            }
+            var url = (data && data.url) ? data.url : '?p=login';
+            window.top.location.href = url;
+          })
+          .withFailureHandler(function() {
+            window.top.location.href = '?p=login';
+          })
+          .logout();
+      });
     }
   </script>
 </body>
