@@ -41,8 +41,9 @@ var Router = {
       if (!e) e = { parameter: {} };
       if (!e.parameter) e.parameter = {};
 
-      var routePath = e.parameter.p || e.parameter.route || 'home';
-      Logger.log('🔍 Router: ' + method + ' ' + routePath);
+      // Ruta inicial: si no hay ?p=, va directo al login
+      var routePath = e.parameter.p || e.parameter.route || '';
+      Logger.log('🔍 Router: ' + method + ' ' + (routePath || '(raíz)'));
 
       var target = Route.find(routePath, method);
       var params = {};
@@ -97,12 +98,14 @@ var Router = {
 // Rutas
 // ==========================================
 
-// El login es ahora la puerta de entrada de la app.
-// Ajustá 'login' si tu método en Ctrl_Auth.gs se llama distinto.
+// Página inicial (raíz sin ?p=) → Login
 Route.get('', 'Auth@login');
-Route.get('home', 'Auth@login');
 
-// Panel del Super Admin (ex Ctrl_Home, ahora Ctrl_SuperAdmin)
+// Login y logout explícitos
+Route.get('login',  'Auth@login');
+Route.get('logout', 'Auth@logout');
+
+// Panel del Super Admin
 Route.get('dashboard', 'SuperAdmin@index');
 
 // Dashboard del cliente (Marketing OS PRO)
