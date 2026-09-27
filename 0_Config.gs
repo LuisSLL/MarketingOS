@@ -12,20 +12,41 @@ var CONFIG = {
 
   APP_TAGLINE: 'Bolivia Saas',
 
-  // ID del Spreadsheet que actúa como base de datos.
-  // Dejalo vacío ('') para usar la hoja activa del proyecto.
+  // ID del Spreadsheet que actúa como base de datos MASTER.
   SPREADSHEET_ID: '1nmagQxWkjN55le_3OWifJXhk7xuzVs68aJXB1I6ldFk',
 
-  // Catálogo de tablas (hojas). Agregá una entrada por cada
-  // hoja que necesites, ej: USERS: 'USERS'
+  // Catálogo de tablas (hojas) del MASTER.
   DB: {
-    // USERS: 'USERS'
+    USERS: 'USERS',
+    SESSIONS: 'SESSIONS',
+    LOGS: 'LOGS'
+  },
+
+  // Seguridad
+  AUTH: {
+    SALT: 'marketingos_salt_2026',
+    SESSION_HOURS: 8
+  },
+
+  // Roles del sistema
+  ROLES: {
+    SUPER_ADMIN: 1,
+    ADMIN: 2,
+    CLIENTE: 4
   }
 
 };
 
 function getConfig() {
   return CONFIG;
+}
+
+/**
+ * URL oficial de la Web App.
+ * Evita que la redirección caiga en el iframe de googleusercontent.com.
+ */
+function getWebAppUrl() {
+  return ScriptApp.getService().getUrl();
 }
 
 globalThis.CONFIG = CONFIG;
