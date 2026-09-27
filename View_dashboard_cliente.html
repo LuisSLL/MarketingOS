@@ -1,0 +1,168 @@
+<!-- ENCABEZADO -->
+<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-white tracking-tight">Dashboard</h1>
+    <p class="mt-1 text-slate-400">Resumen general de campañas y clientes.</p>
+  </div>
+  <button class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 text-sm shadow-lg shadow-indigo-600/20 transition-colors">
+    <i data-lucide="plus" class="w-4 h-4"></i>
+    Nueva campaña
+  </button>
+</div>
+
+<!-- TARJETAS DE MÉTRICAS -->
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-500">Campañas activas</span>
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-950/50 text-indigo-400">
+        <i data-lucide="megaphone" class="w-4 h-4"></i>
+      </div>
+    </div>
+    <div class="mt-3 text-2xl font-bold text-white">14</div>
+    <div class="mt-1 text-xs text-emerald-400">+3 esta semana</div>
+  </div>
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-500">Leads nuevos</span>
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-950/50 text-indigo-400">
+        <i data-lucide="filter" class="w-4 h-4"></i>
+      </div>
+    </div>
+    <div class="mt-3 text-2xl font-bold text-white">86</div>
+    <div class="mt-1 text-xs text-emerald-400">+18% vs. mes anterior</div>
+  </div>
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-500">Contenido programado</span>
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-950/50 text-indigo-400">
+        <i data-lucide="calendar" class="w-4 h-4"></i>
+      </div>
+    </div>
+    <div class="mt-3 text-2xl font-bold text-white">23</div>
+    <div class="mt-1 text-xs text-slate-500">Próximos 7 días</div>
+  </div>
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-500">Clientes activos</span>
+      <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-950/50 text-indigo-400">
+        <i data-lucide="users" class="w-4 h-4"></i>
+      </div>
+    </div>
+    <div class="mt-3 text-2xl font-bold text-white">9</div>
+    <div class="mt-1 text-xs text-slate-500">Sin cambios</div>
+  </div>
+
+</div>
+
+<!-- KANBAN DE CAMPAÑAS (solo vista, no interactivo aún) -->
+<div class="mb-6">
+  <h2 class="font-semibold text-white mb-3">Campañas por estado</h2>
+  <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+
+    <div class="w-64 shrink-0">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase tracking-wide text-slate-400">To Do</span>
+        <span class="text-xs text-slate-500">3</span>
+      </div>
+      <div class="space-y-2">
+        <div class="rounded-lg border border-slate-800 bg-slate-900 p-3">
+          <p class="text-sm font-medium text-slate-100">Lanzamiento línea de verano</p>
+          <p class="text-xs text-slate-500 mt-1">Cliente: Andes Retail</p>
+        </div>
+        <div class="rounded-lg border border-slate-800 bg-slate-900 p-3">
+          <p class="text-sm font-medium text-slate-100">Campaña Google Ads Q4</p>
+          <p class="text-xs text-slate-500 mt-1">Cliente: Bolivia Saas</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-64 shrink-0">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase tracking-wide text-slate-400">In Progress</span>
+        <span class="text-xs text-slate-500">2</span>
+      </div>
+      <div class="space-y-2">
+        <div class="rounded-lg border border-slate-800 bg-slate-900 p-3">
+          <p class="text-sm font-medium text-slate-100">Rediseño de identidad</p>
+          <p class="text-xs text-slate-500 mt-1">Cliente: Nova Studio</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-64 shrink-0">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase tracking-wide text-slate-400">Review</span>
+        <span class="text-xs text-slate-500">1</span>
+      </div>
+      <div class="space-y-2">
+        <div class="rounded-lg border border-slate-800 bg-slate-900 p-3">
+          <p class="text-sm font-medium text-slate-100">Newsletter mensual</p>
+          <p class="text-xs text-slate-500 mt-1">Cliente: Andes Retail</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-64 shrink-0">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase tracking-wide text-slate-400">Done</span>
+        <span class="text-xs text-slate-500">4</span>
+      </div>
+      <div class="space-y-2">
+        <div class="rounded-lg border border-slate-800 bg-slate-900 p-3 opacity-70">
+          <p class="text-sm font-medium text-slate-100">Landing page promo</p>
+          <p class="text-xs text-slate-500 mt-1">Cliente: Bolivia Saas</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ACTIVIDAD RECIENTE -->
+<div class="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+  <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+    <h2 class="font-semibold text-white">Actividad reciente</h2>
+    <span class="text-xs text-slate-500">Datos de ejemplo</span>
+  </div>
+  <div class="divide-y divide-slate-800">
+
+    <div class="px-5 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-950/50 text-indigo-400 text-sm font-semibold">JD</span>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-slate-100 truncate">Jane Doe publicó un nuevo contenido</p>
+          <p class="text-xs text-slate-500">Hace 10 minutos</p>
+        </div>
+      </div>
+      <span class="shrink-0 text-xs font-medium rounded-full px-2.5 py-1 bg-emerald-900/30 text-emerald-400">Publicado</span>
+    </div>
+
+    <div class="px-5 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-950/50 text-indigo-400 text-sm font-semibold">MG</span>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-slate-100 truncate">María Gómez agregó un nuevo lead</p>
+          <p class="text-xs text-slate-500">Hace 45 minutos</p>
+        </div>
+      </div>
+      <span class="shrink-0 text-xs font-medium rounded-full px-2.5 py-1 bg-indigo-900/30 text-indigo-400">Nuevo</span>
+    </div>
+
+    <div class="px-5 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-950/50 text-indigo-400 text-sm font-semibold">LR</span>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-slate-100 truncate">Luis Rodríguez pausó una campaña</p>
+          <p class="text-xs text-slate-500">Hace 3 horas</p>
+        </div>
+      </div>
+      <span class="shrink-0 text-xs font-medium rounded-full px-2.5 py-1 bg-amber-900/30 text-amber-400">Pausado</span>
+    </div>
+
+  </div>
+</div>
