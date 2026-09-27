@@ -5,28 +5,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= typeof title !== 'undefined' ? title : 'Login - Marketing OS PRO' ?></title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    html, body {
-      margin: 0;
-      min-height: 100vh;
-    }
-    /* Efecto de desenfoque para el fondo */
+    html, body { margin: 0; min-height: 100vh; }
     .bg-blur {
       background: radial-gradient(circle at 20% 30%, rgba(88, 28, 135, 0.4) 0%, transparent 40%),
                   radial-gradient(circle at 80% 70%, rgba(30, 58, 138, 0.4) 0%, transparent 40%);
     }
-    /* Efecto Glassmorphism para la tarjeta */
     .glass-card {
       background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    /* Estilo para los inputs */
     .input-glass {
       background: rgba(30, 41, 59, 0.5);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -41,18 +34,14 @@
 </head>
 <body class="min-h-screen flex items-center justify-center font-sans antialiased bg-slate-950 relative overflow-hidden">
 
-  <!-- FONDO CON GRADIENTES -->
   <div class="fixed inset-0 bg-blur z-0"></div>
   <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] z-0"></div>
   <div class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] z-0"></div>
 
-  <!-- CONTENEDOR PRINCIPAL -->
   <div class="relative z-10 w-full max-w-sm px-4 sm:px-0 py-6">
 
-    <!-- TARJETA DE LOGIN -->
     <div class="glass-card rounded-2xl p-6 shadow-2xl">
 
-      <!-- LOGO Y TÍTULO -->
       <div class="flex flex-col items-center mb-6">
         <div class="flex items-center gap-2 mb-4">
           <div class="relative w-10 h-10 flex items-center justify-center">
@@ -65,15 +54,12 @@
             Marketing OS <span class="text-indigo-500 text-xl align-top">PRO</span>
           </h1>
         </div>
-
         <h2 class="text-xl sm:text-2xl font-bold text-white mb-1">Welcome back</h2>
-     
       </div>
 
-      <!-- FORMULARIO -->
-      <form class="space-y-2">
+      <form class="space-y-2" id="loginForm" onsubmit="event.preventDefault(); hacerLogin();">
+        <input type="hidden" id="loginNext" value="<?= typeof nextRoute !== 'undefined' ? nextRoute : '' ?>">
 
-        <!-- Campo Email -->
         <div>
           <label for="email" class="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
           <div class="relative">
@@ -84,7 +70,6 @@
           </div>
         </div>
 
-        <!-- Campo Password -->
         <div>
           <label for="password" class="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
           <div class="relative">
@@ -92,13 +77,12 @@
               <i data-lucide="lock" class="w-4 h-4 text-slate-500"></i>
             </div>
             <input type="password" id="password" placeholder="••••••••••••" class="input-glass w-full rounded-lg pl-10 pr-10 py-2 text-sm text-white placeholder-slate-500">
-            <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300 transition-colors">
-              <i data-lucide="eye" class="w-4 h-4"></i>
+            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300 transition-colors">
+              <i data-lucide="eye" id="eyeIcon" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
 
-        <!-- Recordar y Olvidé contraseña -->
         <div class="flex items-center justify-between text-xs sm:text-sm">
           <label class="flex items-center gap-2 cursor-pointer group">
             <input type="checkbox" class="w-4 h-4 rounded border-slate-600 bg-slate-800 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-slate-900">
@@ -107,14 +91,11 @@
           <a href="#" class="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">Forgot password?</a>
         </div>
 
-        <!-- Botón Log in -->
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition-all duration-200 shadow-lg shadow-indigo-600/20 mt-1">
+        <button type="submit" id="btnLogin" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition-all duration-200 shadow-lg shadow-indigo-600/20 mt-1">
           Log in
         </button>
-
       </form>
 
-      <!-- DIVISOR -->
       <div class="relative my-6">
         <div class="absolute inset-0 flex items-center">
           <div class="w-full border-t border-slate-700/50"></div>
@@ -124,7 +105,6 @@
         </div>
       </div>
 
-      <!-- BOTÓN GOOGLE -->
       <button type="button" class="w-full flex items-center justify-center gap-3 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 text-white font-medium py-2.5 rounded-lg transition-colors">
         <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -135,15 +115,12 @@
         Continue with Google
       </button>
 
-      <!-- LINK REGISTRO -->
       <p class="text-center text-sm text-slate-400 mt-6">
         Don't have an account?
         <a href="#" class="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">Sign up</a>
       </p>
-
     </div>
 
-    <!-- FOOTER LEGAL -->
     <div class="text-center mt-6 text-xs text-slate-500 space-x-2">
       <span>Protected by 256-bit SSL</span>
       <span class="text-slate-700">•</span>
@@ -151,11 +128,89 @@
       <span class="text-slate-700">•</span>
       <a href="#" class="hover:text-slate-400 transition-colors">Terms of Service</a>
     </div>
-
   </div>
 
   <script>
     lucide.createIcons();
+
+    // Tema oscuro para SweetAlert2 con clases Tailwind
+    function swalTheme() {
+      return {
+        buttonsStyling: false,
+        customClass: {
+          popup: '!bg-slate-900 !text-white !rounded-2xl !border !border-slate-800 !shadow-2xl',
+          title: '!text-white !text-xl !font-bold',
+          htmlContainer: '!text-slate-300 !text-sm',
+          confirmButton: '!bg-indigo-600 hover:!bg-indigo-700 !text-white !px-5 !py-2 !rounded-lg !font-medium !transition-colors !ml-2',
+          cancelButton: '!bg-slate-700 hover:!bg-slate-600 !text-white !px-5 !py-2 !rounded-lg !font-medium !transition-colors !mr-2',
+          icon: '!border-0'
+        }
+      };
+    }
+
+    function togglePassword() {
+      var input = document.getElementById('password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function hacerLogin() {
+      var email = document.getElementById('email').value.trim();
+      var password = document.getElementById('password').value;
+      var next = document.getElementById('loginNext').value;
+      var btn = document.getElementById('btnLogin');
+
+      if (!email || !password) {
+        Swal.fire(Object.assign(swalTheme(), {
+          icon: 'warning',
+          title: 'Campos incompletos',
+          text: 'Ingresa tu email y contraseña para continuar.'
+        }));
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Verificando...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          btn.disabled = false;
+          btn.textContent = 'Log in';
+
+          var data = response;
+          if (typeof response === 'string') {
+            try { data = JSON.parse(response); } catch (e) { data = { success: false }; }
+          }
+
+          if (data && data.success) {
+            Swal.fire(Object.assign(swalTheme(), {
+              icon: 'success',
+              title: '¡Bienvenido!',
+              text: data.message || 'Sesión iniciada correctamente.',
+              timer: 1200,
+              showConfirmButton: false,
+              timerProgressBar: true
+            })).then(function() {
+              window.top.location.href = data.url;
+            });
+          } else {
+            Swal.fire(Object.assign(swalTheme(), {
+              icon: 'error',
+              title: 'Error de acceso',
+              text: (data && data.message) ? data.message : 'Credenciales incorrectas.'
+            }));
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.textContent = 'Log in';
+          Swal.fire(Object.assign(swalTheme(), {
+            icon: 'error',
+            title: 'Error de conexión',
+            text: err.message || 'No se pudo contactar al servidor.'
+          }));
+        })
+        .login({ email: email, password: password, next: next });
+    }
   </script>
 </body>
 </html>
