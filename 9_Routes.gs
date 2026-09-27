@@ -105,6 +105,9 @@ Route.get('home', 'Auth@login');
 // Panel del Super Admin (ex Ctrl_Home, ahora Ctrl_SuperAdmin)
 Route.get('dashboard', 'SuperAdmin@index');
 
+// Dashboard del cliente (Marketing OS PRO)
+Route.get('cliente', 'Cliente@index');
+
 // Agregá tus propias rutas acá, por ejemplo:
 // Route.get('productos', 'Productos@index');
 // Route.post('productos/crear', 'Productos@create');
