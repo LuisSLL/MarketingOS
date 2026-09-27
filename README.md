@@ -4,7 +4,37 @@
 
 El proyecto sigue un enfoque tipo **Together**: existe una hoja maestra para administrar las cuentas/clientes y una plantilla de Google Sheets que puede clonarse para cada cliente.
 
-> **Estado actual:** el proyecto se encuentra en construcción. La interfaz base del Super Admin, el router, el motor de vistas, el modelo CRUD sobre Google Sheets y la pantalla de login ya están preparados, pero varias piezas de la lógica SaaS todavía están pendientes de implementación.
+> **Estado actual:** el proyecto se encuentra en construcción. La interfaz base del Super Admin, el router, el motor de vistas, el modelo CRUD sobre Google Sheets, la pantalla de login y el sistema de sesión ya están preparados. La creación de clientes, la clonación del TEMPLATE y el sistema de tokens están pendientes.
+
+---
+
+## 0. Índice
+
+1. [Objetivo](#1-objetivo)
+2. [Arquitectura](#2-arquitectura)
+3. [Estructura del proyecto](#3-estructura-del-proyecto)
+4. [Componentes principales](#4-componentes-principales)
+5. [Motor de vistas](#5-motor-de-vistas)
+6. [Router](#6-router)
+7. [Punto de entrada](#7-punto-de-entrada)
+8. [Autenticación](#8-autenticación)
+9. [Patrón de redireccionamiento (GASVEL)](#9-patrón-de-redireccionamiento-gasvel)
+10. [Super Admin](#10-super-admin)
+11. [Modelo de datos](#11-modelo-de-datos)
+12. [Flujo de creación de un cliente](#12-flujo-de-creación-de-un-cliente)
+13. [Multi-tenancy](#13-multi-tenancy)
+14. [Tokens](#14-tokens)
+15. [Helpers](#15-helpers)
+16. [Interfaz](#16-interfaz)
+17. [Errores](#17-errores)
+18. [Configuración de Google Apps Script](#18-configuración-de-google-apps-script)
+19. [Instalación](#19-instalación)
+20. [Desarrollo](#20-desarrollo)
+21. [Estado actual](#21-estado-actual)
+22. [Roadmap](#22-roadmap)
+23. [Principios del proyecto](#23-principios-del-proyecto)
+24. [Licencia](#24-licencia)
+25. [Resumen](#25-resumen)
 
 ---
 
@@ -32,12 +62,13 @@ La idea principal es separar:
 
 La aplicación utiliza una arquitectura sencilla inspirada en MVC:
 
-```text
+```
 Google Apps Script
 │
 ├── Controllers
 │   ├── Ctrl_Auth
-│   └── Ctrl_SuperAdmin
+│   ├── Ctrl_SuperAdmin
+│   └── Ctrl_Cliente
 │
 ├── Models
 │   └── Base_Model
@@ -58,7 +89,7 @@ Google Apps Script
 
 ### Flujo de una petición
 
-```text
+```
 Usuario
    │
    ▼
@@ -71,51 +102,68 @@ doGet() / doPost()
 Router
    │
    ├── busca la ruta
-   │
    ├── encuentra el controlador
-   │
    └── ejecuta el método
    │
    ▼
 Controller
    │
    ├── Model
-   │
    └── View
           │
           ▼
        HTML final
 ```
 
+### Flujo de autenticación
+
+```
+Usuario abre la Web App
+        ↓
+Router → ?p='' → Auth@login → View_Login.html
+        ↓
+Usuario ingresa credenciales
+        ↓
+google.script.run.login()
+        ↓
+Ctrl_Auth.autenticar() valida contra MASTER!USERS (SHA-256)
+        ↓
+Guarda sesión en PropertiesService.getUserProperties()
+        ↓
+Devuelve { url: getWebAppUrl() + '?p=dashboard' }
+        ↓
+Cliente: window.top.location.href = data.url
+        ↓
+Ctrl_SuperAdmin@index valida sesión → renderiza Layout_Main + Dashboard
+```
+
 ---
 
 ## 3. Estructura del proyecto
 
-```text
+```
 MarketingOS/
 │
-├── 0_Config.gs
-├── 1_Base_Controller.gs
-├── 2_Base_Model.gs
-├── 3_Engine_View.gs
+├── 0_Config.gs              # Config global + getWebAppUrl()
+├── 0_Install.gs             # Instalador de MASTER
+├── 1_Base_Controller.gs     # Clase padre de controladores
+├── 2_Base_Model.gs          # CRUD genérico sobre Sheets
+├── 3_Engine_View.gs         # Motor de vistas + layouts
 │
-├── 8_Ctrl_SuperAdmin.gs
-├── 9_Routes.gs
-├── 10_Helpers.gs
-├── 11_Main.gs
-├── 12_Ctrl_Auth.gs
+├── 8_Ctrl_SuperAdmin.gs     # Controlador del Dashboard
+├── 9_Routes.gs              # Router + definición de rutas
+├── 10_Helpers.gs            # WebApp, formatos, tema
+├── 11_Main.gs               # doGet / doPost / wrappers
+├── 12_Ctrl_Auth.gs          # Login, logout, sesión
 │
 ├── View_Dashboard.html
 ├── View_Error_404.html
 ├── View_Error_500.html
-├── View_Layout_Main.html
+├── View_Layout_Main.html    # Layout Super Admin
+├── View_Layout_Cliente.html # Layout cliente (pendiente)
 ├── View_Login.html
 │
-├── DATA_MODEL.md
-├── ROADMAP.md
-├── TREE.md
-├── README.md
-│
+├── MarketingOS.md           # Este documento
 └── appsscript.json
 ```
 
@@ -123,7 +171,8 @@ MarketingOS/
 
 | Archivo | Responsabilidad |
 |---|---|
-| `0_Config.gs` | Configuración global de la aplicación |
+| `0_Config.gs` | Configuración global + `getWebAppUrl()` |
+| `0_Install.gs` | Instalador de MASTER (USERS, SESSIONS, LOGS) |
 | `1_Base_Controller.gs` | Funciones comunes para controladores |
 | `2_Base_Model.gs` | Acceso CRUD genérico a Google Sheets |
 | `3_Engine_View.gs` | Renderizado de vistas y layouts |
@@ -131,47 +180,54 @@ MarketingOS/
 | `9_Routes.gs` | Definición y resolución de rutas |
 | `10_Helpers.gs` | Utilidades globales |
 | `11_Main.gs` | Entrada principal de la Web App |
-| `12_Ctrl_Auth.gs` | Autenticación / pantalla de login |
+| `12_Ctrl_Auth.gs` | Autenticación / login / logout / sesión |
 | `View_*.html` | Interfaces HTML |
-| `DATA_MODEL.md` | Modelo de datos |
-| `ROADMAP.md` | Plan de desarrollo |
-| `TREE.md` | Árbol del proyecto |
 | `appsscript.json` | Configuración del proyecto Apps Script |
 
 ---
 
 ## 4. Componentes principales
 
-### 4.1 Configuración
+### 4.1 Configuración (`0_Config.gs`)
 
-`0_Config.gs` concentra la configuración de MarketingOS.
+Concentra la configuración de MarketingOS:
 
-La arquitectura prevista contempla principalmente:
+```javascript
+var CONFIG = {
+  APP_NAME: 'MarketingOS',
+  APP_TAGLINE: 'Bolivia Saas',
+  SPREADSHEET_ID: '...',   // ID del Spreadsheet MASTER
+  DB: {
+    USERS: 'USERS',
+    SESSIONS: 'SESSIONS',
+    LOGS: 'LOGS'
+  },
+  AUTH: {
+    SALT: 'marketingos_salt_2026',
+    SESSION_HOURS: 8
+  },
+  ROLES: {
+    SUPER_ADMIN: 1,
+    ADMIN: 2,
+    CLIENTE: 4
+  }
+};
 
-```text
-MASTER_ID
-TEMPLATE_ID
+function getWebAppUrl() {
+  return ScriptApp.getService().getUrl();
+}
 ```
 
-La idea es que estos identificadores permitan localizar:
+### 4.2 Base Controller (`1_Base_Controller.gs`)
 
-- La hoja maestra del SaaS.
-- La hoja utilizada como plantilla para nuevos clientes.
-
----
-
-### 4.2 Base Controller
-
-`1_Base_Controller.gs` contiene funcionalidades reutilizables para los controladores.
-
-Entre ellas:
+Funcionalidades reutilizables para los controladores:
 
 - Renderizado mediante `View.render()`.
 - Redirecciones.
 - Respuestas JSON estandarizadas.
 - Integración con `WebApp`.
 
-Los controladores concretos pueden extender:
+Los controladores concretos extienden:
 
 ```javascript
 class Ctrl_Ejemplo extends Base_Controller {
@@ -179,13 +235,9 @@ class Ctrl_Ejemplo extends Base_Controller {
 }
 ```
 
----
+### 4.3 Base Model (`2_Base_Model.gs`)
 
-### 4.3 Base Model
-
-`2_Base_Model.gs` proporciona acceso genérico a Google Sheets.
-
-Actualmente contempla operaciones como:
+Acceso genérico a Google Sheets con métodos estáticos:
 
 ```javascript
 Base_Model.all(sheetName)
@@ -198,34 +250,7 @@ Base_Model.getNextId(sheetName)
 Base_Model.createTable(sheetName, headers)
 ```
 
-El modelo utiliza la primera fila de cada hoja como encabezado y transforma los registros en objetos JavaScript.
-
-Ejemplo conceptual:
-
-```text
-Google Sheet
-
-ID | Nombre | Email
-1  | Juan   | juan@email.com
-2  | Ana    | ana@email.com
-```
-
-se convierte en:
-
-```javascript
-[
-  {
-    ID: 1,
-    Nombre: "Juan",
-    Email: "juan@email.com"
-  },
-  {
-    ID: 2,
-    Nombre: "Ana",
-    Email: "ana@email.com"
-  }
-]
-```
+Transforma cada fila en un objeto JavaScript usando la primera fila como encabezados.
 
 ---
 
@@ -233,100 +258,64 @@ se convierte en:
 
 `3_Engine_View.gs` administra el renderizado HTML.
 
-Las vistas siguen la convención:
+Convención de nombres:
 
-```text
-View_Nombre.html
 ```
-
-Por ejemplo:
-
-```text
 View_Dashboard.html
 View_Login.html
 View_Error_404.html
 View_Error_500.html
-```
-
-También existe un layout principal:
-
-```text
 View_Layout_Main.html
 ```
 
-### Renderizado con layout
+**Renderizado con layout**
 
 ```javascript
-View.render(
-  'Dashboard',
-  data,
-  'Layout_Main'
-);
+View.render('Dashboard', data, 'Layout_Main');
 ```
 
-El motor:
-
-1. Carga la vista.
-2. Inserta los datos.
-3. Evalúa el HTML.
-4. Inserta el contenido dentro del layout.
-5. Devuelve el resultado final al navegador.
-
-### Vistas standalone
-
-Para páginas que no necesitan sidebar ni navegación se utiliza:
+**Vistas standalone (sin sidebar/header)**
 
 ```javascript
 View.renderStandalone('Login', data);
 ```
 
-Actualmente este mecanismo se utiliza para pantallas como:
-
-- Login.
-- Error 404.
-- Error 500.
+Usado para Login, Error 404 y Error 500.
 
 ---
 
 ## 6. Router
 
-`9_Routes.gs` contiene el sistema de rutas.
+`9_Routes.gs` contiene el sistema de rutas vía `?p=nombre-ruta`.
 
-Las rutas utilizan el parámetro:
-
-```text
-?p=nombre-ruta
-```
-
-Ejemplo:
-
-```text
-?p=dashboard
-```
-
-Una ruta se registra así:
+### Rutas actuales
 
 ```javascript
+// Página inicial (raíz sin ?p=) → Login
+Route.get('', 'Auth@login');
+
+// Login y logout
+Route.get('login',  'Auth@login');
+Route.get('logout', 'Auth@logout');
+
+// Panel del Super Admin
 Route.get('dashboard', 'SuperAdmin@index');
+
+// Dashboard del cliente (Marketing OS PRO)
+Route.get('cliente', 'Cliente@index');
 ```
 
-Esto significa:
+### Sintaxis
 
-```text
-dashboard
-   ↓
-Ctrl_SuperAdmin
-   ↓
-index()
-```
+| Ruta | Método | Controlador |
+|---|---|---|
+| `?p=` | `Auth@login` | Muestra login |
+| `?p=login` | `Auth@login` | Muestra login |
+| `?p=logout` | `Auth@logout` | Cierra sesión |
+| `?p=dashboard` | `SuperAdmin@index` | Dashboard Super Admin |
+| `?p=cliente` | `Cliente@index` | Dashboard cliente |
 
-También existe soporte para rutas POST:
-
-```javascript
-Route.post('productos/crear', 'Productos@create');
-```
-
-Y rutas con parámetros:
+### Soporte de parámetros dinámicos
 
 ```javascript
 Route.get('productos/:id', 'Productos@get');
@@ -343,137 +332,220 @@ doGet(e)
 doPost(e)
 ```
 
-Estas funciones reciben las peticiones de Google Apps Script y las entregan al Router.
+Ambas funciones entregan la petición al `Router.resolve()`.
 
-También existe:
+También incluye:
 
 ```javascript
 ejecutarController(ruta, params)
 ```
 
-que permite ejecutar un controlador directamente desde llamadas del lado cliente mediante `google.script.run`.
+que permite ejecutar un controlador desde el cliente con `google.script.run`.
 
 ---
 
 ## 8. Autenticación
 
-`12_Ctrl_Auth.gs` contiene actualmente el controlador de autenticación.
+`12_Ctrl_Auth.gs` maneja login, logout y sesión.
 
-En el estado actual, el controlador principalmente muestra la pantalla de login:
+### Login
 
-```text
-View_Login.html
+- Valida email + password contra `MASTER!USERS` con SHA-256 + salt.
+- Guarda sesión en `PropertiesService.getUserProperties()`.
+- Devuelve URL absoluta de redirección (`?p=dashboard`).
+
+### Logout
+
+- Borra `PropertiesService.getUserProperties()`.
+- Registra log en `MASTER!LOGS`.
+- Devuelve URL absoluta al login (`?p=login`).
+
+### Hash SHA-256
+
+```javascript
+hashPassword_(password) {
+  var raw = password + CONFIG.AUTH.SALT;
+  var digest = Utilities.computeDigest(
+    Utilities.DigestAlgorithm.SHA_256,
+    raw,
+    Utilities.Charset.UTF_8
+  );
+  return digest.map(function(b) {
+    return ('0' + (b & 0xFF).toString(16)).slice(-2);
+  }).join('');
+}
 ```
 
-La lógica completa de:
+### Puentes para `google.script.run`
 
-- validación de credenciales,
-- sesiones,
-- autorización,
-- hash de contraseñas,
-- logout,
+```javascript
+function login(data) {
+  var ctrl = new Ctrl_Auth();
+  return JSON.stringify(ctrl.autenticar(data || {}));
+}
 
-forma parte de las siguientes etapas del proyecto.
-
-La autenticación definitiva debe integrarse con la hoja maestra `MASTER`.
+function logout() {
+  var ctrl = new Ctrl_Auth();
+  return JSON.stringify(ctrl.logout());
+}
+```
 
 ---
 
-## 9. Super Admin
+## 9. Patrón de redireccionamiento (GASVEL)
 
-`8_Ctrl_SuperAdmin.gs` contiene el controlador del panel administrativo.
+Este es el patrón oficial del proyecto. Todo login y logout debe usarlo.
 
-Ruta actual:
+### Problema
 
-```text
-?p=dashboard
+Google Apps Script ejecuta la Web App dentro de un `<iframe>` con sandbox en un dominio `*.googleusercontent.com`. Las redirecciones relativas como `window.top.location.href = '?p=login'` desde código asíncrono son bloqueadas o interpretadas mal → el usuario queda atrapado en el iframe o ve un 404.
+
+### Regla de oro
+
+**NUNCA** redirigir con rutas relativas desde código asíncrono. Siempre:
+
+1. **En el servidor:** construir la URL absoluta con `getWebAppUrl() + '?p=...'` y devolverla en la respuesta.
+2. **En el cliente:** usar `window.top.location.href = data.url` (nunca `window.location`).
+
+### Implementación
+
+**Servidor (`0_Config.gs`):**
+
+```javascript
+function getWebAppUrl() {
+  return ScriptApp.getService().getUrl();
+}
 ```
 
-que apunta a:
+**Servidor (`Ctrl_Auth.autenticar`):**
 
-```text
-SuperAdmin@index
+```javascript
+return {
+  success: true,
+  url: getWebAppUrl() + '?p=dashboard'   // URL ABSOLUTA
+};
 ```
 
-y termina renderizando:
+**Servidor (`Ctrl_Auth.logout`):**
 
-```text
-View_Dashboard.html
+```javascript
+return {
+  success: true,
+  url: getWebAppUrl() + '?p=login'       // URL ABSOLUTA
+};
 ```
 
-El dashboard representa la interfaz desde la cual se administrarán posteriormente los clientes del SaaS.
+**Cliente (`View_Login.html` y `View_Layout_Main.html`):**
+
+```javascript
+window.top.location.href = data.url;      // top, no window
+```
+
+### Por qué funciona
+
+| Pieza | Rol |
+|---|---|
+| `ScriptApp.getService().getUrl()` | Devuelve la URL pública absoluta de la Web App |
+| `window.top.location.href` | Redirige la ventana completa, saliendo del iframe |
+| `PropertiesService.getUserProperties()` | Sesión persistida del lado del servidor |
+
+### Errores comunes (NO hacer)
+
+- ❌ `window.location.href = '?p=login'` → atrapado en el iframe.
+- ❌ `window.top.location.href = '?p=login'` → relativa rota desde async.
+- ❌ Guardar tokens en `sessionStorage` y confiar en ellos para validar sesión.
+- ❌ Redirigir con `data.redirect` que sea relativo.
 
 ---
 
-## 10. Modelo de datos
+## 10. Super Admin
+
+`8_Ctrl_SuperAdmin.gs` maneja el panel administrativo.
+
+Ruta actual: `?p=dashboard` → `SuperAdmin@index` → `View_Dashboard.html`
+
+### Guard de sesión
+
+Antes de renderizar, valida que exista `userEmail` en `PropertiesService`. Si no, redirige al login.
+
+```javascript
+index() {
+  var userProps = PropertiesService.getUserProperties();
+  var userEmail = userProps.getProperty('userEmail');
+
+  if (!userEmail) {
+    return HtmlService.createHtmlOutput(
+      '<script>window.top.location.href="' + getWebAppUrl() + '?p=login";</script>'
+    );
+  }
+
+  // ... render del dashboard
+}
+```
+
+---
+
+## 11. Modelo de datos
 
 MarketingOS está diseñado alrededor de dos tipos principales de Spreadsheet.
 
 ### MASTER
 
-La hoja maestra controla la plataforma SaaS.
+Controla la plataforma SaaS.
 
-Tabs previstas:
+| Tab | Propósito |
+|---|---|
+| `USERS` | Credenciales de administradores y clientes |
+| `SESSIONS` | Sesiones activas (opcional, en PropertiesService) |
+| `LOGS` | Registro de acciones |
+| `Subscriptions` | Suscripciones de clientes |
+| `Clients` | Datos de clientes |
+| `Settings` | Configuración global |
 
-```text
-Subscriptions
-Clients
-Logs
-Settings
-```
+Estructura de `USERS`:
+
+| ID | EMAIL | PASSWORD_HASH | NOMBRE | ROL | ACTIVO | CREADO | ULTIMO_LOGIN |
+|---|---|---|---|---|---|---|---|
 
 ### TEMPLATE
 
-Es la plantilla que se clonará para cada cliente.
+Plantilla que se clona para cada cliente.
 
-Tabs previstas:
-
-```text
-Leads
-Sales
-Campaigns
-AdSets
-Ads
-Budgets
-Reports
-Clients
-Tasks
-Settings
-Tokens
-```
-
-El detalle completo se encuentra en:
-
-```text
-DATA_MODEL.md
-```
+| Tab | Propósito |
+|---|---|
+| `Leads` | Prospectos del cliente |
+| `Sales` | Ventas |
+| `Campaigns` | Campañas de marketing |
+| `AdSets` | Conjuntos de anuncios |
+| `Ads` | Anuncios individuales |
+| `Budgets` | Presupuestos |
+| `Reports` | Reportes |
+| `Clients` | Clientes del cliente |
+| `Tasks` | Tareas |
+| `Settings` | Configuración de la instancia |
+| `Tokens` | Tokens de acceso |
 
 ---
 
-## 11. Flujo de creación de un cliente
+## 12. Flujo de creación de un cliente
 
-El objetivo final del sistema es que el Super Admin pueda hacer algo similar a:
-
-```text
+```
 + Agregar Cliente
        │
        ▼
-Crear registro del cliente
+Crear registro del cliente en MASTER!Clients
        │
        ▼
-Clonar TEMPLATE
+Clonar TEMPLATE → MarketingOS_NombreCliente
        │
        ▼
-MarketingOS_NombreCliente
+Generar token único
        │
        ▼
-Generar token
+Guardar token en Settings de la nueva instancia
        │
        ▼
-Guardar token en Settings
-       │
-       ▼
-Registrar instancia en MASTER
+Registrar instancia en MASTER!Subscriptions
        │
        ▼
 Asignar acceso al cliente
@@ -482,23 +554,19 @@ Asignar acceso al cliente
 Cliente listo
 ```
 
-La clonación está prevista mediante:
+La clonación se hace con:
 
 ```javascript
-DriveApp.getFileById(TEMPLATE_ID).makeCopy(...)
+DriveApp.getFileById(TEMPLATE_ID).makeCopy('MarketingOS_' + nombreCliente);
 ```
-
-El objetivo es que cada cliente tenga su propia instancia de Google Sheets sin compartir directamente los datos con otros clientes.
 
 ---
 
-## 12. Multi-tenancy
+## 13. Multi-tenancy
 
-El modelo de MarketingOS utiliza una estrategia de **una instancia de Sheets por cliente**.
+Una instancia de Sheets por cliente:
 
-Conceptualmente:
-
-```text
+```
 MASTER
 │
 ├── Cliente A
@@ -511,9 +579,7 @@ MASTER
        └── MarketingOS_ClienteC
 ```
 
-Esto permite aislar los datos de cada cliente.
-
-El `MASTER` mantiene la relación entre:
+El MASTER mantiene la relación entre:
 
 - cliente,
 - email,
@@ -524,56 +590,48 @@ El `MASTER` mantiene la relación entre:
 
 ---
 
-## 13. Tokens
+## 14. Tokens
 
-Cada instancia de cliente tendrá un token asociado.
+Cada instancia de cliente tiene un token asociado.
 
-La plantilla contempla:
+La plantilla contempla en `Settings`:
 
-```text
-Settings
-
+```
 B1 = token
 B2 = owner_email
 B3 = vence
 ```
 
-Además existe una hoja:
+Además existe una hoja `Tokens` con:
 
-```text
-Tokens
 ```
-
-con información relacionada con:
-
-```text
 token
 email
 expira
 ```
 
-La validación del token será utilizada posteriormente para determinar qué instancia puede acceder a la aplicación.
+La validación del token determina qué instancia puede acceder.
 
 ---
 
-## 14. Helpers
+## 15. Helpers
 
 `10_Helpers.gs` contiene utilidades globales.
 
-### URLs
+**URLs**
 
 ```javascript
 WebApp.url(routeName)
 WebApp.asset(path)
 ```
 
-### JSON
+**JSON**
 
 ```javascript
 json_encode(obj)
 ```
 
-### Formateo
+**Formateo**
 
 ```javascript
 formatDate(date)
@@ -581,81 +639,75 @@ formatDateTime(date)
 formatCurrency(amount)
 ```
 
-### Tema
+**Tema**
 
 ```javascript
 getTheme()
 setTheme(theme)
 ```
 
-El sistema contempla actualmente:
+El sistema contempla `light` y `dark`.
 
-```text
-light
-dark
+---
+
+## 16. Interfaz
+
+- Tailwind CSS (CDN)
+- Lucide Icons (CDN)
+- SweetAlert2 (CDN) con tema oscuro Tailwind
+- HTML generado por Google Apps Script
+
+Layout principal (`View_Layout_Main.html`):
+
+- Sidebar con navegación.
+- Header con buscador, calendario, mensajes, notificaciones.
+- Perfil de usuario (email + iniciales dinámicas).
+- Sidebar responsive para móvil con overlay.
+
+### Tema oscuro SweetAlert2
+
+Función `swalTheme()` compartida:
+
+```javascript
+function swalTheme() {
+  return {
+    buttonsStyling: false,
+    customClass: {
+      popup: '!bg-slate-900 !text-white !rounded-2xl !border !border-slate-800 !shadow-2xl',
+      title: '!text-white !text-xl !font-bold',
+      htmlContainer: '!text-slate-300 !text-sm',
+      confirmButton: '!bg-indigo-600 hover:!bg-indigo-700 !text-white !px-5 !py-2 !rounded-lg !font-medium !transition-colors !ml-2',
+      cancelButton: '!bg-slate-700 hover:!bg-slate-600 !text-white !px-5 !py-2 !rounded-lg !font-medium !transition-colors !mr-2',
+      icon: '!border-0'
+    }
+  };
+}
 ```
 
 ---
 
-## 15. Interfaz
+## 17. Errores
 
-La interfaz utiliza principalmente:
+Dos vistas principales:
 
-- **Tailwind CSS**
-- **Lucide Icons**
-- HTML generado por Google Apps Script
-
-El layout principal utiliza una interfaz administrativa con:
-
-- Sidebar.
-- Navegación.
-- Header.
-- Buscador.
-- Calendario.
-- Mensajes.
-- Notificaciones.
-- Perfil.
-- Área de contenido.
-
-La interfaz está preparada para adaptarse a pantallas móviles mediante un sidebar responsive.
-
----
-
-## 16. Errores
-
-El proyecto contempla dos vistas principales de error:
-
-```text
+```
 View_Error_404.html
 View_Error_500.html
 ```
 
-### 404
+**404**: se usa cuando una ruta no existe.
 
-Se utiliza cuando una ruta no existe.
-
-Ejemplo:
-
-```text
+```
 ?p=ruta-inexistente
 ```
 
-### 500
-
-Se utiliza cuando ocurre una excepción durante la ejecución de:
-
-- Router.
-- Controller.
-- Web App.
-- Renderizado.
-
-La vista puede mostrar el mensaje técnico del error durante el desarrollo.
+**500**: se usa cuando ocurre una excepción durante la ejecución del Router, Controller, Web App o renderizado.
 
 ---
 
-## 17. Configuración de Google Apps Script
+## 18. Configuración de Google Apps Script
 
-El proyecto utiliza:
+El proyecto usa:
 
 ```json
 {
@@ -663,85 +715,55 @@ El proyecto utiliza:
 }
 ```
 
-y está configurado como Web App.
+Configurado como Web App:
 
-Actualmente:
-
-```text
+```
 executeAs: USER_DEPLOYING
 access: ANYONE_ANONYMOUS
 ```
 
-La configuración definitiva de acceso y autenticación deberá revisarse cuando se implemente el sistema de usuarios y seguridad completo.
-
 ---
 
-## 18. Instalación
+## 19. Instalación
 
 ### 1. Crear el proyecto
 
-Crear un proyecto nuevo en:
+Crear un proyecto nuevo en Google Apps Script y copiar los archivos.
 
-**Google Apps Script**
+### 2. Configurar el Spreadsheet MASTER
 
-y copiar los archivos del proyecto.
+Crear un Spreadsheet y configurar su ID en `0_Config.gs` como `SPREADSHEET_ID`.
 
-### 2. Configurar el Spreadsheet
+### 3. Ejecutar el instalador
 
-Crear o seleccionar:
+Desde el editor:
 
-```text
-MASTER
-TEMPLATE
+1. Seleccionar la función `instalar` en el desplegable.
+2. Ejecutar.
+3. Autorizar permisos.
+4. Revisar el Logger: obtendrás el email y la contraseña del admin inicial.
+
+Credenciales por defecto:
+
+```
+Email:    admin@marketingos.bo
+Password: 65765765
 ```
 
-y configurar sus IDs en `0_Config.gs`.
+### 4. Deploy como Web App
 
-### 3. Revisar permisos
-
-MarketingOS utiliza servicios de Google como:
-
-```text
-SpreadsheetApp
-DriveApp
-PropertiesService
-HtmlService
-ScriptApp
 ```
-
-Por lo tanto, Google Apps Script solicitará los permisos correspondientes.
-
-### 4. Ejecutar como Web App
-
-Desde Apps Script:
-
-```text
-Deploy
-   ↓
-New deployment
-   ↓
-Web app
+Deploy → New deployment → Web app
 ```
-
-Configurar el acceso según el modelo de autenticación que se implemente.
 
 ---
 
-## 19. Desarrollo
+## 20. Desarrollo
 
 Para agregar un nuevo controlador:
 
-```text
-Ctrl_Productos
-Ctrl_Clientes
-Ctrl_Campaigns
-```
-
-por ejemplo:
-
 ```javascript
 class Ctrl_Productos extends Base_Controller {
-
   index() {
     return this.view('Productos', {});
   }
@@ -750,148 +772,150 @@ class Ctrl_Productos extends Base_Controller {
 globalThis.Ctrl_Productos = Ctrl_Productos;
 ```
 
-Después registrar la ruta:
+Registrar la ruta:
 
 ```javascript
 Route.get('productos', 'Productos@index');
 ```
 
-Y crear:
+Crear la vista:
 
-```text
+```
 View_Productos.html
 ```
 
-La convención general es:
+Convención:
 
-```text
-Ruta
- ↓
-Controller
- ↓
-Model
- ↓
-View
+```
+Ruta → Controller → Model → View
 ```
 
 ---
 
-## 20. Estado actual
+## 21. Estado actual
 
 ### Implementado
 
-- [x] Estructura base del proyecto.
-- [x] Base Controller.
-- [x] Base Model.
-- [x] CRUD genérico sobre Google Sheets.
-- [x] Motor de vistas.
-- [x] Layout principal.
-- [x] Router GET/POST.
-- [x] Parámetros dinámicos en rutas.
-- [x] Controlador Super Admin.
-- [x] Dashboard base.
-- [x] Pantalla de login.
-- [x] Páginas de error 404 y 500.
-- [x] Helpers globales.
-- [x] Configuración Web App.
-- [x] Documentación inicial del modelo de datos.
-- [x] Roadmap inicial.
+- ☑ Estructura base del proyecto
+- ☑ Base Controller
+- ☑ Base Model con CRUD genérico
+- ☑ Motor de vistas
+- ☑ Layout principal
+- ☑ Router GET/POST con parámetros dinámicos
+- ☑ Controlador Super Admin
+- ☑ Controlador Auth
+- ☑ Dashboard base
+- ☑ Pantalla de login
+- ☑ Páginas de error 404 y 500
+- ☑ Helpers globales
+- ☑ Configuración Web App
+- ☑ Instalador inicial con hash SHA-256 + salt
+- ☑ Modelo de usuarios (`MASTER!USERS`)
+- ☑ Sesiones persistidas en PropertiesService
+- ☑ Login funcional conectado al MASTER
+- ☑ Logout funcional con SweetAlert2
+- ☑ Redireccionamiento con URL absoluta (patrón GASVEL)
+- ☑ Integración de SweetAlert2 con tema oscuro Tailwind
+- ☑ Sidebar responsive con overlay móvil
+- ☑ Rutas login, logout, dashboard, cliente
+- ☑ Ruta raíz (`''`) → Login directo
 
 ### Pendiente
 
-- [ ] Configuración definitiva `MASTER_ID`.
-- [ ] Configuración definitiva `TEMPLATE_ID`.
-- [ ] Instalador inicial.
-- [ ] Modelo de usuarios.
-- [ ] Hash SHA-256.
-- [ ] Login conectado al MASTER.
-- [ ] Sesiones.
-- [ ] Logout.
-- [ ] Creación de clientes desde el Dashboard.
-- [ ] Clonación automática del TEMPLATE.
-- [ ] Generación y validación de tokens.
-- [ ] Detección automática de clientes.
-- [ ] Acceso aislado por instancia.
-- [ ] Vencimientos.
-- [ ] Logs.
-- [ ] Billing.
+- ☐ Configuración definitiva `TEMPLATE_ID`
+- ☐ Creación de clientes desde el Dashboard
+- ☐ Clonación automática del TEMPLATE
+- ☐ Generación de token único por cliente
+- ☐ Guardado del token en Settings de la instancia
+- ☐ Registro de instancia en `MASTER!Subscriptions`
+- ☐ Modelo de datos completo para `MASTER!Subscriptions`
+- ☐ Modelo de datos completo para `MASTER!Clients`
+- ☐ Vista de Clientes (CRUD)
+- ☐ Vista de Pagos
+- ☐ Vista de Suscripciones
+- ☐ Vista de Facturación
+- ☐ Detección automática de clientes
+- ☐ Acceso aislado por instancia
+- ☐ Vencimientos
+- ☐ Billing
 
 ---
 
-## 21. Roadmap
+## 22. Roadmap
 
-El desarrollo está dividido en cuatro fases principales.
+### 🔥 Fase 1 — Core
 
-### Fase 1 — Core
+**Objetivo:** Super Admin → Clientes → Clonación TEMPLATE → Instancia
 
-Construir el núcleo administrativo:
+**Implementado:**
 
-```text
-Super Admin
-    ↓
-Clientes
-    ↓
-Clonación de TEMPLATE
-    ↓
-Instancia del cliente
-```
+- Estructura base, Base Controller, Base Model, Motor de vistas
+- Router GET/POST, Layout principal, Controladores Auth y SuperAdmin
+- Dashboard base, Login, Error 404/500, Helpers, Web App
+- Instalador, Modelo de usuarios, Sesiones, Login, Logout
+- Redireccionamiento GASVEL, SweetAlert2, Sidebar responsive
 
-### Fase 2 — Auto Detect
+**Pendiente:**
 
-El Dashboard deberá detectar y mostrar automáticamente las instancias registradas en:
+- ☐ Configuración definitiva `TEMPLATE_ID`
+- ☐ Creación de clientes desde el Dashboard
+- ☐ Clonación automática del TEMPLATE
+- ☐ Generación y guardado de token
+- ☐ Registro de instancia en `MASTER!Subscriptions`
 
-```text
-MASTER!Subscriptions
-```
+### 🎯 Fase 2 — Auto Detect
 
-### Fase 3 — Cliente
+**Objetivo:** El Dashboard detecta automáticamente las instancias registradas en `MASTER!Subscriptions`.
 
-Implementar el acceso del cliente y validar:
+- ☐ Lectura automática de `MASTER!Subscriptions`
+- ☐ Renderizado de instancias activas
+- ☐ Indicadores de estado (activo / vencido / bloqueado)
+- ☐ Refresco en tiempo real
+- ☐ Métricas reales (MRR, Pagados, Por Vencer, Bloqueados)
 
-```text
-token
-email
-expiración
-instancia
-```
+### 👤 Fase 3 — Cliente
 
-El cliente solo deberá acceder a los datos correspondientes a su propia instancia.
+**Objetivo:** El cliente accede a su propia instancia validando token + email + expiración.
 
-### Fase 4 — SaaS
+- ☐ Modelo de usuarios por instancia
+- ☐ Hash SHA-256 para clientes
+- ☐ Login de cliente contra su instancia
+- ☐ Sesiones por instancia
+- ☐ Logout de cliente
+- ☐ Validación de token
+- ☐ Detección automática de instancias
+- ☐ Acceso aislado por instancia
+- ☐ Control de vencimientos
+- ☐ Dashboard del cliente
 
-Agregar:
+### 💰 Fase 4 — SaaS
 
-- vencimientos,
-- logs,
-- billing,
-- administración de suscripciones,
-- automatizaciones.
+**Objetivo:** Convertir MarketingOS en plataforma SaaS completa.
 
-El detalle operativo se mantiene en:
-
-```text
-ROADMAP.md
-```
+- ☐ Sistema de logs centralizado
+- ☐ Billing / facturación
+- ☐ Administración de suscripciones
+- ☐ Automatizaciones
+- ☐ Métricas SaaS (MRR, churn, activos)
+- ☐ Vencimientos automáticos
+- ☐ Notificaciones de pago
+- ☐ Exportación de reportes
 
 ---
 
-## 22. Principios del proyecto
+## 23. Principios del proyecto
 
-MarketingOS debe mantenerse bajo algunos principios simples:
+**Separación**
 
-### Separación
+- MASTER administra el SaaS.
+- TEMPLATE define la estructura de una nueva instancia.
+- Cada cliente trabaja con su propia instancia.
 
-El MASTER administra el SaaS.
+**Reutilización**
 
-El TEMPLATE define la estructura de una nueva instancia.
+La lógica común permanece en:
 
-Cada cliente trabaja con su propia instancia.
-
-### Reutilización
-
-La lógica común debe permanecer en:
-
-```text
+```
 Base_Controller
 Base_Model
 View
@@ -899,29 +923,19 @@ Helpers
 Router
 ```
 
-Los módulos específicos deben implementarse como controladores y vistas independientes.
+Los módulos específicos se implementan como controladores y vistas independientes.
 
-### Simplicidad
+**Simplicidad**
 
-La aplicación está construida sobre Google Apps Script y Google Sheets para reducir infraestructura externa y facilitar el despliegue.
+Construido sobre Google Apps Script y Google Sheets para reducir infraestructura externa.
 
-### Aislamiento
+**Aislamiento**
 
 Los datos de un cliente no deben quedar expuestos a otro cliente.
 
-### Evolución
+**Evolución**
 
-El proyecto comienza como un núcleo sencillo y puede evolucionar progresivamente hacia una plataforma SaaS completa.
-
----
-
-## 23. Documentación relacionada
-
-Además de este README:
-
-- [`DATA_MODEL.md`](DATA_MODEL.md) — estructura de MASTER, TEMPLATE y datos.
-- [`ROADMAP.md`](ROADMAP.md) — fases y tareas pendientes.
-- [`TREE.md`](TREE.md) — estructura de archivos.
+El proyecto comienza como un núcleo sencillo y evoluciona hacia un SaaS completo.
 
 ---
 
@@ -929,17 +943,17 @@ Además de este README:
 
 Este proyecto no define actualmente una licencia pública.
 
-Hasta que se agregue una licencia explícita, el código debe considerarse **propietario / todos los derechos reservados**.
+Hasta que se agregue una licencia explícita, el código debe considerarse propietario / todos los derechos reservados.
 
 ---
 
 ## 25. Resumen
 
-MarketingOS tiene como objetivo convertirse en un **SaaS de gestión de marketing multi-tenant sobre Google Apps Script y Google Sheets**.
+MarketingOS tiene como objetivo convertirse en un SaaS de gestión de marketing multi-tenant sobre Google Apps Script y Google Sheets.
 
-La arquitectura base ya separa:
+La arquitectura base separa:
 
-```text
+```
 Configuración
      ↓
 Controllers
@@ -953,9 +967,9 @@ View Engine
 Google Sheets
 ```
 
-y el modelo SaaS previsto añade:
+Y el modelo SaaS previsto añade:
 
-```text
+```
 MASTER
   │
   ├── Clientes
@@ -974,4 +988,22 @@ MASTER
         └── Tasks
 ```
 
-El siguiente objetivo funcional es completar el **Core del Super Admin**, especialmente la configuración MASTER/TEMPLATE, autenticación y creación automática de nuevas instancias de clientes.
+El siguiente objetivo funcional es completar el Core del Super Admin: configuración MASTER/TEMPLATE, creación de clientes desde el Dashboard y clonación automática del TEMPLATE.
+
+---
+
+## 📅 Historial de cambios
+
+| Fecha | Cambio |
+|---|---|
+| 2026-09-27 | Creación inicial del documento consolidado |
+| 2026-09-27 | Login funcional contra `MASTER!USERS` con SHA-256 |
+| 2026-09-27 | Sesión persistida en PropertiesService (patrón GASVEL) |
+| 2026-09-27 | Redireccionamiento con URL absoluta documentado como principio oficial |
+| 2026-09-27 | Logout funcional con SweetAlert2 + spinner |
+| 2026-09-27 | Rutas login, logout, dashboard, cliente registradas |
+| 2026-09-27 | Instalador `0_Install.gs` con hash SHA-256 + salt |
+| 2026-09-27 | Layout responsive con sidebar móvil |
+| 2026-09-27 | SweetAlert2 integrado con tema oscuro Tailwind |
+
+**Última actualización:** 2026-09-27
