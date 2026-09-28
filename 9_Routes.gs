@@ -94,6 +94,7 @@ var Router = {
   }
 };
 
+
 // ==========================================
 // Rutas
 // ==========================================
@@ -108,13 +109,30 @@ Route.get('logout', 'Auth@logout');
 // Panel del Super Admin
 Route.get('dashboard', 'SuperAdmin@index');
 
+// Clientes (Super Admin)
+Route.get('clientes',        'Clientes@index');
+Route.get('clientes/crear',  'Clientes@crearForm');
+Route.post('clientes/crear', 'Clientes@crear');
+
+// Pagos
+Route.get('pagos', 'Pagos@index');
+
+// Suscripciones
+Route.get('suscripciones', 'Suscripciones@index');
+
+// Facturación
+Route.get('facturacion', 'Facturacion@index');
+
+// Configuración
+Route.get('configuracion', 'Configuracion@index');
+
+// Ayuda
+Route.get('ayuda', 'Ayuda@index');
+
 // Dashboard del cliente (Marketing OS PRO)
 Route.get('cliente', 'Cliente@index');
 
-// Agregá tus propias rutas acá, por ejemplo:
-// Route.get('productos', 'Productos@index');
-// Route.post('productos/crear', 'Productos@create');
-// Route.get('productos/:id', 'Productos@getById');
+// ==========================================
 
 globalThis.Route = Route;
 globalThis.Router = Router;
