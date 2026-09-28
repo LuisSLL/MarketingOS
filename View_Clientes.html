@@ -1,0 +1,518 @@
+<!-- Blob de datos para filtros y acciones del lado del cliente -->
+<script>
+  var CLIENTES = <?!= JSON.stringify(clientes) ?>;
+</script>
+
+<!-- ENCABEZADO -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-8">
+  <div>
+    <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Clientes</h1>
+    <p class="mt-1 text-slate-400 text-sm">
+      Cartera de cuentas registradas en el MASTER.
+    </p>
+  </div>
+  <button id="btn-nuevo-cliente" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-indigo-600/20 w-fit">
+    <i data-lucide="plus" class="w-4 h-4"></i>
+    Nuevo Cliente
+  </button>
+</div>
+
+<!-- TARJETAS RESUMEN (solo clientes) -->
+<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-900/50 text-indigo-400">
+        <i data-lucide="users" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Total</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white"><?= clientes.length ?></div>
+    <div class="mt-1 text-xs text-slate-500">clientes registrados</div>
+  </div>
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-900/50 text-emerald-400">
+        <i data-lucide="check-circle" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Activos</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white">
+      <?= clientes.filter(function(c){ return c.estadoCalculado === 'ACTIVO'; }).length ?>
+    </div>
+    <div class="mt-1 text-xs text-emerald-400">al día</div>
+  </div>
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-amber-900/50 text-amber-400">
+        <i data-lucide="clock" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Por Vencer</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white">
+      <?= clientes.filter(function(c){ return c.estadoCalculado === 'POR_VENCER'; }).length ?>
+    </div>
+    <div class="mt-1 text-xs text-amber-400">vencen en ≤ 7 días</div>
+  </div>
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-rose-900/50 text-rose-400">
+        <i data-lucide="slash" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Bloqueados</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white">
+      <?= clientes.filter(function(c){
+        return c.estadoCalculado === 'VENCIDO'
+            || c.estadoCalculado === 'SUSPENDIDO'
+            || c.estadoCalculado === 'INACTIVO';
+      }).length ?>
+    </div>
+    <div class="mt-1 text-xs text-rose-400">requieren atención</div>
+  </div>
+</div>
+
+<!-- FILTROS -->
+<div class="rounded-xl border border-slate-800 bg-slate-900 p-4 mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <div class="relative md:col-span-2">
+      <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+      <input id="filtro-busqueda" type="text" placeholder="Buscar por nombre o email..."
+        class="bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-indigo-500 w-full">
+    </div>
+
+    <div class="relative">
+      <i data-lucide="map-pin" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+      <select id="filtro-ciudad" class="bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-indigo-500 w-full appearance-none">
+        <option value="">Todas las ciudades</option>
+      </select>
+    </div>
+
+    <div class="relative">
+      <i data-lucide="filter" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+      <select id="filtro-estado" class="bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-indigo-500 w-full appearance-none">
+        <option value="">Todos los estados</option>
+        <option value="ACTIVO">Activo</option>
+        <option value="POR_VENCER">Por Vencer</option>
+        <option value="VENCIDO">Vencido</option>
+        <option value="SUSPENDIDO">Suspendido</option>
+        <option value="INACTIVO">Inactivo</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- TABLA DE CLIENTES -->
+<div class="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+  <div class="px-4 md:px-5 py-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <h2 class="font-semibold text-white">Listado de Clientes</h2>
+    <span class="text-xs text-slate-500" id="contador-resultados"><?= clientes.length ?> de <?= clientes.length ?></span>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-xs min-w-[1000px]">
+      <thead class="bg-slate-950/50 text-slate-500 uppercase tracking-wider font-medium">
+        <tr>
+          <th class="px-4 py-3">Cliente</th>
+          <th class="px-4 py-3">Ciudad</th>
+          <th class="px-4 py-3">Plan</th>
+          <th class="px-4 py-3">Monto</th>
+          <th class="px-4 py-3">Vence</th>
+          <th class="px-4 py-3">Estado</th>
+          <th class="px-4 py-3 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-clientes" class="divide-y divide-slate-800">
+        <!-- Se renderiza en JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <div id="tabla-vacia" class="hidden px-4 py-12 text-center">
+    <div class="flex flex-col items-center gap-2">
+      <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-500">
+        <i data-lucide="users" class="w-5 h-5"></i>
+      </div>
+      <p class="text-sm text-slate-400">No hay clientes que coincidan con los filtros.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  // ==========================================
+  // HELPERS
+  // ==========================================
+  function buscarCliente(id) {
+    return CLIENTES.find(function (c) { return String(c.id) === String(id); });
+  }
+
+  function llamarControlador(ruta, params, mensajeCargando) {
+    return new Promise(function (resolve, reject) {
+      if (mensajeCargando) {
+        Swal.fire(Object.assign(swalTheme(), {
+          title: mensajeCargando,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: function () { Swal.showLoading(); }
+        }));
+      }
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject)
+        .ejecutarController(ruta, params || {});
+    });
+  }
+
+  function mostrarError(err) {
+    Swal.fire(Object.assign(swalTheme(), {
+      icon: 'error',
+      title: 'Error',
+      text: (err && err.message) || (err && err.error) || String(err)
+    }));
+  }
+
+  function badgeEstado(estado) {
+    var mapa = {
+      ACTIVO:     { color: 'emerald', label: 'Activo' },
+      POR_VENCER: { color: 'amber',   label: 'Por Vencer' },
+      VENCIDO:    { color: 'rose',    label: 'Vencido' },
+      SUSPENDIDO: { color: 'rose',    label: 'Suspendido' },
+      INACTIVO:   { color: 'slate',   label: 'Inactivo' }
+    };
+    return mapa[estado] || { color: 'slate', label: estado || '—' };
+  }
+
+  function formatearFecha(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+    var meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    return d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  function formatearMonto(moneda, monto) {
+    if (!monto && monto !== 0) return '—';
+    return (moneda || 'BOB') + ' ' + Number(monto).toLocaleString('es-BO');
+  }
+
+  // ==========================================
+  // RENDER DE LA TABLA
+  // ==========================================
+  function renderClientes(lista) {
+    var tbody = document.getElementById('tabla-clientes');
+    var vacia = document.getElementById('tabla-vacia');
+    var contador = document.getElementById('contador-resultados');
+
+    contador.textContent = lista.length + ' de ' + CLIENTES.length;
+
+    if (lista.length === 0) {
+      tbody.innerHTML = '';
+      vacia.classList.remove('hidden');
+      return;
+    }
+    vacia.classList.add('hidden');
+
+    var html = lista.map(function (c) {
+      var b = badgeEstado(c.estadoCalculado);
+      return (
+        '<tr class="hover:bg-slate-800/30 transition-colors">' +
+          '<td class="px-4 py-3">' +
+            '<div class="flex items-center gap-2">' +
+              '<div class="w-7 h-7 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">' +
+                '<i data-lucide="building-2" class="w-3.5 h-3.5"></i>' +
+              '</div>' +
+              '<div class="flex flex-col min-w-0">' +
+                '<span class="font-medium text-slate-200 whitespace-nowrap">' + (c.nombre || '—') + '</span>' +
+                '<span class="text-[10px] text-slate-500 whitespace-nowrap">' + (c.email || '—') + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</td>' +
+          '<td class="px-4 py-3 text-slate-400 whitespace-nowrap">' + (c.ciudad || '—') + '</td>' +
+          '<td class="px-4 py-3">' +
+            '<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-900/30 text-purple-300 border border-purple-800/50 whitespace-nowrap">' +
+              (c.plan || '—') +
+            '</span>' +
+          '</td>' +
+          '<td class="px-4 py-3 text-slate-200 font-medium whitespace-nowrap">' + formatearMonto(c.moneda, c.monto) + '</td>' +
+          '<td class="px-4 py-3 text-slate-400 whitespace-nowrap">' + formatearFecha(c.vence) + '</td>' +
+          '<td class="px-4 py-3">' +
+            '<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-' + b.color + '-900/30 text-' + b.color + '-400 border border-' + b.color + '-800/50 flex items-center gap-1 w-fit whitespace-nowrap">' +
+              '<div class="w-1.5 h-1.5 rounded-full bg-' + b.color + '-400"></div>' + b.label +
+            '</span>' +
+          '</td>' +
+          '<td class="px-4 py-3 text-right">' +
+            '<div class="flex items-center justify-end gap-1">' +
+              '<button class="btn-ver p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white" data-id="' + c.id + '" title="Ver">' +
+                '<i data-lucide="eye" class="w-3.5 h-3.5"></i>' +
+              '</button>' +
+              '<button class="btn-editar p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white" data-id="' + c.id + '" title="Editar">' +
+                '<i data-lucide="pencil" class="w-3.5 h-3.5"></i>' +
+              '</button>' +
+              '<button class="btn-estado p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white" data-id="' + c.id + '" title="Cambiar estado">' +
+                '<i data-lucide="toggle-left" class="w-3.5 h-3.5"></i>' +
+              '</button>' +
+              '<button class="btn-eliminar p-1.5 rounded hover:bg-rose-950/40 text-rose-500 hover:text-rose-400" data-id="' + c.id + '" title="Eliminar">' +
+                '<i data-lucide="trash-2" class="w-3.5 h-3.5"></i>' +
+              '</button>' +
+            '</div>' +
+          '</td>' +
+        '</tr>'
+      );
+    }).join('');
+
+    tbody.innerHTML = html;
+    lucide.createIcons();
+    bindAcciones();
+  }
+
+  // ==========================================
+  // FILTROS
+  // ==========================================
+  var filtros = { busqueda: '', ciudad: '', estado: '' };
+
+  function aplicarFiltros() {
+    var lista = CLIENTES.filter(function (c) {
+      if (filtros.busqueda) {
+        var q = filtros.busqueda.toLowerCase();
+        var coincide =
+          (c.nombre || '').toLowerCase().indexOf(q) !== -1 ||
+          (c.email  || '').toLowerCase().indexOf(q) !== -1;
+        if (!coincide) return false;
+      }
+      if (filtros.ciudad && (c.ciudad || '') !== filtros.ciudad) return false;
+      if (filtros.estado && c.estadoCalculado !== filtros.estado) return false;
+      return true;
+    });
+    renderClientes(lista);
+  }
+
+  function poblarCiudades() {
+    var set = {};
+    CLIENTES.forEach(function (c) { if (c.ciudad) set[c.ciudad] = true; });
+    var sel = document.getElementById('filtro-ciudad');
+    Object.keys(set).sort().forEach(function (ciudad) {
+      var opt = document.createElement('option');
+      opt.value = ciudad;
+      opt.textContent = ciudad;
+      sel.appendChild(opt);
+    });
+  }
+
+  document.getElementById('filtro-busqueda').addEventListener('input', function (e) {
+    filtros.busqueda = e.target.value.trim();
+    aplicarFiltros();
+  });
+  document.getElementById('filtro-ciudad').addEventListener('change', function (e) {
+    filtros.ciudad = e.target.value;
+    aplicarFiltros();
+  });
+  document.getElementById('filtro-estado').addEventListener('change', function (e) {
+    filtros.estado = e.target.value;
+    aplicarFiltros();
+  });
+
+  // ==========================================
+  // ACCIONES POR FILA
+  // ==========================================
+  function bindAcciones() {
+    document.querySelectorAll('.btn-ver').forEach(function (btn) {
+      btn.onclick = function () {
+        var c = buscarCliente(btn.dataset.id);
+        if (!c) return;
+        Swal.fire(Object.assign(swalTheme(), {
+          title: c.nombre,
+          html:
+            '<div class="text-left text-xs space-y-1.5">' +
+            '<div><span class="text-slate-400">Email:</span> ' + (c.email || '—') + '</div>' +
+            '<div><span class="text-slate-400">Teléfono:</span> ' + (c.telefono || '—') + '</div>' +
+            '<div><span class="text-slate-400">Ciudad:</span> ' + (c.ciudad || '—') + '</div>' +
+            '<div><span class="text-slate-400">Plan:</span> ' + (c.plan || '—') + '</div>' +
+            '<div><span class="text-slate-400">Monto:</span> ' + formatearMonto(c.moneda, c.monto) + '</div>' +
+            '<div><span class="text-slate-400">Método:</span> ' + (c.metodoPago || '—') + '</div>' +
+            '<div><span class="text-slate-400">Vence:</span> ' + formatearFecha(c.vence) + '</div>' +
+            '<div><span class="text-slate-400">Estado:</span> ' + (c.estadoCalculado || '—') + '</div>' +
+            '<div><span class="text-slate-400">Sheet:</span> <span class="font-mono text-[10px]">' + (c.spreadsheetId || '—') + '</span></div>' +
+            '</div>',
+          confirmButtonText: 'Cerrar'
+        }));
+      };
+    });
+
+    document.querySelectorAll('.btn-editar').forEach(function (btn) {
+      btn.onclick = function () {
+        var c = buscarCliente(btn.dataset.id);
+        if (!c) return;
+        Swal.fire(Object.assign(swalTheme(), {
+          title: 'Editar cliente',
+          html:
+            '<input id="e-nombre" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Nombre" value="' + (c.nombre || '') + '">' +
+            '<input id="e-email" type="email" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Email" value="' + (c.email || '') + '">' +
+            '<input id="e-telefono" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Teléfono" value="' + (c.telefono || '') + '">' +
+            '<input id="e-ciudad" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Ciudad" value="' + (c.ciudad || '') + '">' +
+            '<input id="e-plan" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Plan" value="' + (c.plan || '') + '">' +
+            '<input id="e-monto" type="number" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Monto" value="' + (c.monto || 0) + '">' +
+            '<input id="e-vence" type="date" class="swal2-input !bg-slate-800 !text-white !border-slate-700" value="' + (c.vence ? String(c.vence).slice(0,10) : '') + '">',
+          focusConfirm: false,
+          showCancelButton: true,
+          confirmButtonText: 'Guardar',
+          cancelButtonText: 'Cancelar',
+          reverseButtons: true,
+          preConfirm: function () {
+            var nombre = document.getElementById('e-nombre').value.trim();
+            var email = document.getElementById('e-email').value.trim();
+            if (!nombre || !email) {
+              Swal.showValidationMessage('Nombre y email son obligatorios.');
+              return false;
+            }
+            return {
+              id: c.id, nombre: nombre, email: email,
+              telefono: document.getElementById('e-telefono').value.trim(),
+              ciudad: document.getElementById('e-ciudad').value.trim(),
+              plan: document.getElementById('e-plan').value.trim(),
+              monto: document.getElementById('e-monto').value,
+              vence: document.getElementById('e-vence').value
+            };
+          }
+        })).then(function (r) {
+          if (!r.isConfirmed) return;
+          llamarControlador('Clientes@actualizar', r.value, 'Guardando...')
+            .then(function (resp) {
+              if (resp && resp.success) {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Guardado', text: resp.message }))
+                  .then(function () { window.top.location.reload(); });
+              } else {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'Error', text: (resp && resp.message) || 'No se pudo guardar.' }));
+              }
+            })
+            .catch(mostrarError);
+        });
+      };
+    });
+
+    document.querySelectorAll('.btn-estado').forEach(function (btn) {
+      btn.onclick = function () {
+        var c = buscarCliente(btn.dataset.id);
+        if (!c) return;
+        Swal.fire(Object.assign(swalTheme(), {
+          title: 'Cambiar estado — ' + c.nombre,
+          input: 'select',
+          inputOptions: { ACTIVO: 'Activo', SUSPENDIDO: 'Suspendido', INACTIVO: 'Inactivo (desactivado)' },
+          inputValue: c.estadoCliente,
+          showCancelButton: true,
+          confirmButtonText: 'Cambiar',
+          cancelButtonText: 'Cancelar',
+          reverseButtons: true
+        })).then(function (r) {
+          if (!r.isConfirmed) return;
+          llamarControlador('Clientes@cambiarEstado', { id: c.id, estado: r.value }, 'Actualizando...')
+            .then(function (resp) {
+              if (resp && resp.success) {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Listo', text: resp.message }))
+                  .then(function () { window.top.location.reload(); });
+              } else {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'Error', text: (resp && resp.message) || 'No se pudo cambiar.' }));
+              }
+            })
+            .catch(mostrarError);
+        });
+      };
+    });
+
+    document.querySelectorAll('.btn-eliminar').forEach(function (btn) {
+      btn.onclick = function () {
+        var c = buscarCliente(btn.dataset.id);
+        if (!c) return;
+        Swal.fire(Object.assign(swalTheme(), {
+          icon: 'warning',
+          title: '¿Eliminar a ' + c.nombre + '?',
+          text: 'Se borra de MASTER (Clients y Subscriptions). Su Spreadsheet NO se borra de Drive. No se puede deshacer.',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+          reverseButtons: true
+        })).then(function (r) {
+          if (!r.isConfirmed) return;
+          llamarControlador('Clientes@eliminar', { id: c.id }, 'Eliminando...')
+            .then(function (resp) {
+              if (resp && resp.success) {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Eliminado', text: resp.message }))
+                  .then(function () { window.top.location.reload(); });
+              } else {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'Error', text: (resp && resp.message) || 'No se pudo eliminar.' }));
+              }
+            })
+            .catch(mostrarError);
+        });
+      };
+    });
+  }
+
+  // ==========================================
+  // NUEVO CLIENTE
+  // ==========================================
+  document.getElementById('btn-nuevo-cliente').addEventListener('click', function () {
+    Swal.fire(Object.assign(swalTheme(), {
+      title: 'Nuevo cliente',
+      html:
+        '<input id="n-nombre" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Nombre del cliente">' +
+        '<input id="n-email" type="email" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Email del cliente">' +
+        '<input id="n-telefono" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Teléfono (opcional)">' +
+        '<input id="n-ciudad" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Ciudad (opcional)">' +
+        '<input id="n-plan" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Plan" value="Starter">' +
+        '<input id="n-monto" type="number" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Monto mensual" value="0">',
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Crear cliente',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+      preConfirm: function () {
+        var nombre = document.getElementById('n-nombre').value.trim();
+        var email = document.getElementById('n-email').value.trim();
+        if (!nombre || !email) {
+          Swal.showValidationMessage('Nombre y email son obligatorios.');
+          return false;
+        }
+        return {
+          nombre: nombre, email: email,
+          telefono: document.getElementById('n-telefono').value.trim(),
+          ciudad: document.getElementById('n-ciudad').value.trim(),
+          plan: document.getElementById('n-plan').value.trim(),
+          monto: document.getElementById('n-monto').value
+        };
+      }
+    })).then(function (r) {
+      if (!r.isConfirmed) return;
+      llamarControlador('Clientes@crear', r.value, 'Creando cliente... clonando plantilla.')
+        .then(function (resp) {
+          if (resp && resp.success) {
+            Swal.fire(Object.assign(swalTheme(), {
+              icon: 'success',
+              title: 'Cliente creado',
+              html:
+                '<p class="mb-3">' + resp.message + '</p>' +
+                '<div class="text-left bg-slate-800 rounded-lg p-3 text-xs space-y-1">' +
+                '<div><span class="text-slate-400">Email:</span> <span class="text-white font-medium">' + resp.clientEmail + '</span></div>' +
+                '<div><span class="text-slate-400">Contraseña:</span> <span class="text-white font-medium">' + resp.clientPassword + '</span></div>' +
+                '</div>' +
+                '<p class="mt-3 text-[11px] text-amber-400">Copiá estos datos ahora: no se vuelven a mostrar.</p>',
+              confirmButtonText: 'Listo'
+            })).then(function () { window.top.location.reload(); });
+          } else {
+            Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'No se pudo crear', text: (resp && resp.message) || 'Error inesperado.' }));
+          }
+        })
+        .catch(mostrarError);
+    });
+  });
+
+  // ==========================================
+  // INIT
+  // ==========================================
+  poblarCiudades();
+  renderClientes(CLIENTES);
+</script>
