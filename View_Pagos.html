@@ -1,0 +1,466 @@
+<!-- Blob de datos para filtros y acciones del lado del cliente -->
+<script>
+  var PAGOS = <?!= JSON.stringify(pagos) ?>;
+  var CLIENTES = <?!= JSON.stringify(clientes) ?>;
+</script>
+
+<!-- ENCABEZADO -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-8">
+  <div>
+    <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Pagos</h1>
+    <p class="mt-1 text-slate-400 text-sm">
+      Historial de cobros y movimientos registrados.
+    </p>
+  </div>
+  <button id="btn-registrar-pago" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-indigo-600/20 w-fit">
+    <i data-lucide="plus" class="w-4 h-4"></i>
+    Registrar Pago
+  </button>
+</div>
+
+<!-- TARJETAS RESUMEN -->
+<div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-900/50 text-emerald-400">
+        <i data-lucide="circle-dollar-sign" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Cobrado (mes)</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white"><?= metrics.cobradoMes ?></div>
+    <div class="mt-1 text-xs text-slate-500">BOB en el mes actual</div>
+  </div>
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-amber-900/50 text-amber-400">
+        <i data-lucide="clock" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Pendiente</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white"><?= metrics.pendiente ?></div>
+    <div class="mt-1 text-xs text-amber-400">por cobrar</div>
+  </div>
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-900/50 text-indigo-400">
+        <i data-lucide="receipt" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Total pagos</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white"><?= metrics.totalPagos ?></div>
+    <div class="mt-1 text-xs text-slate-500">registrados</div>
+  </div>
+
+  <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-900/50 text-purple-400">
+        <i data-lucide="wallet" class="w-3 h-3"></i>
+      </div>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Método top</span>
+    </div>
+    <div class="text-xl md:text-2xl font-bold text-white"><?= metrics.metodoTop ?></div>
+    <div class="mt-1 text-xs text-slate-500">más usado</div>
+  </div>
+</div>
+
+<!-- FILTROS -->
+<div class="rounded-xl border border-slate-800 bg-slate-900 p-4 mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <div class="relative md:col-span-2">
+      <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+      <input id="filtro-busqueda" type="text" placeholder="Buscar por cliente o nota..."
+        class="bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-indigo-500 w-full">
+    </div>
+
+    <div class="relative">
+      <i data-lucide="wallet" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+      <select id="filtro-metodo" class="bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-indigo-500 w-full appearance-none">
+        <option value="">Todos los métodos</option>
+      </select>
+    </div>
+
+    <div class="relative">
+      <i data-lucide="filter" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+      <select id="filtro-estado" class="bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-indigo-500 w-full appearance-none">
+        <option value="">Todos los estados</option>
+        <option value="PAGADO">Pagado</option>
+        <option value="PENDIENTE">Pendiente</option>
+        <option value="ANULADO">Anulado</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- TABLA DE PAGOS -->
+<div class="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+  <div class="px-4 md:px-5 py-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <h2 class="font-semibold text-white">Historial de Pagos</h2>
+    <span class="text-xs text-slate-500" id="contador-resultados"><?= pagos.length ?> de <?= pagos.length ?></span>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-xs min-w-[1000px]">
+      <thead class="bg-slate-950/50 text-slate-500 uppercase tracking-wider font-medium">
+        <tr>
+          <th class="px-4 py-3">Fecha</th>
+          <th class="px-4 py-3">Cliente</th>
+          <th class="px-4 py-3">Monto</th>
+          <th class="px-4 py-3">Método</th>
+          <th class="px-4 py-3">Estado</th>
+          <th class="px-4 py-3">Notas</th>
+          <th class="px-4 py-3 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-pagos" class="divide-y divide-slate-800">
+        <!-- Se renderiza en JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <div id="tabla-vacia" class="hidden px-4 py-12 text-center">
+    <div class="flex flex-col items-center gap-2">
+      <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-500">
+        <i data-lucide="receipt" class="w-5 h-5"></i>
+      </div>
+      <p class="text-sm text-slate-400">No hay pagos que coincidan con los filtros.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+
+  // ==========================================
+  // HELPERS
+  // ==========================================
+  function buscarPago(id) {
+    return PAGOS.find(function (p) { return String(p.id) === String(id); });
+  }
+
+  function llamarControlador(ruta, params, mensajeCargando) {
+    return new Promise(function (resolve, reject) {
+      if (mensajeCargando) {
+        Swal.fire(Object.assign(swalTheme(), {
+          title: mensajeCargando,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: function () { Swal.showLoading(); }
+        }));
+      }
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject)
+        .ejecutarController(ruta, params || {});
+    });
+  }
+
+  function mostrarError(err) {
+    Swal.fire(Object.assign(swalTheme(), {
+      icon: 'error',
+      title: 'Error',
+      text: (err && err.message) || (err && err.error) || String(err)
+    }));
+  }
+
+  function badgeEstado(estado) {
+    var mapa = {
+      PAGADO:    { color: 'emerald', label: 'Pagado' },
+      PENDIENTE: { color: 'amber',   label: 'Pendiente' },
+      ANULADO:   { color: 'rose',    label: 'Anulado' }
+    };
+    var e = (estado || '').toString().toUpperCase();
+    return mapa[e] || { color: 'slate', label: estado || '—' };
+  }
+
+  function formatearFecha(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+    var meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    return d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  function formatearMonto(moneda, monto) {
+    if (!monto && monto !== 0) return '—';
+    return (moneda || 'BOB') + ' ' + Number(monto).toLocaleString('es-BO');
+  }
+
+  // ==========================================
+  // RENDER DE LA TABLA
+  // ==========================================
+  function renderPagos(lista) {
+    var tbody = document.getElementById('tabla-pagos');
+    var vacia = document.getElementById('tabla-vacia');
+    var contador = document.getElementById('contador-resultados');
+
+    contador.textContent = lista.length + ' de ' + PAGOS.length;
+
+    if (lista.length === 0) {
+      tbody.innerHTML = '';
+      vacia.classList.remove('hidden');
+      return;
+    }
+    vacia.classList.add('hidden');
+
+    var html = lista.map(function (p) {
+      var b = badgeEstado(p.estado);
+      return (
+        '<tr class="hover:bg-slate-800/30 transition-colors">' +
+          '<td class="px-4 py-3 text-slate-400 whitespace-nowrap">' + formatearFecha(p.fecha) + '</td>' +
+          '<td class="px-4 py-3">' +
+            '<div class="flex items-center gap-2">' +
+              '<div class="w-7 h-7 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">' +
+                '<i data-lucide="building-2" class="w-3.5 h-3.5"></i>' +
+              '</div>' +
+              '<span class="font-medium text-slate-200 whitespace-nowrap">' + (p.clienteNombre || '—') + '</span>' +
+            '</div>' +
+          '</td>' +
+          '<td class="px-4 py-3 text-slate-200 font-medium whitespace-nowrap">' + formatearMonto(p.moneda, p.monto) + '</td>' +
+          '<td class="px-4 py-3 text-slate-400 whitespace-nowrap">' + (p.metodo || '—') + '</td>' +
+          '<td class="px-4 py-3">' +
+            '<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-' + b.color + '-900/30 text-' + b.color + '-400 border border-' + b.color + '-800/50 flex items-center gap-1 w-fit whitespace-nowrap">' +
+              '<div class="w-1.5 h-1.5 rounded-full bg-' + b.color + '-400"></div>' + b.label +
+            '</span>' +
+          '</td>' +
+          '<td class="px-4 py-3 text-slate-500 whitespace-nowrap">' + (p.notas || '—') + '</td>' +
+          '<td class="px-4 py-3 text-right">' +
+            '<div class="flex items-center justify-end gap-1">' +
+              '<button class="btn-ver p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white" data-id="' + p.id + '" title="Ver">' +
+                '<i data-lucide="eye" class="w-3.5 h-3.5"></i>' +
+              '</button>' +
+              '<button class="btn-editar p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white" data-id="' + p.id + '" title="Editar">' +
+                '<i data-lucide="pencil" class="w-3.5 h-3.5"></i>' +
+              '</button>' +
+              '<button class="btn-eliminar p-1.5 rounded hover:bg-rose-950/40 text-rose-500 hover:text-rose-400" data-id="' + p.id + '" title="Eliminar">' +
+                '<i data-lucide="trash-2" class="w-3.5 h-3.5"></i>' +
+              '</button>' +
+            '</div>' +
+          '</td>' +
+        '</tr>'
+      );
+    }).join('');
+
+    tbody.innerHTML = html;
+    lucide.createIcons();
+    bindAcciones();
+  }
+
+  // ==========================================
+  // FILTROS
+  // ==========================================
+  var filtros = { busqueda: '', metodo: '', estado: '' };
+
+  function aplicarFiltros() {
+    var lista = PAGOS.filter(function (p) {
+      if (filtros.busqueda) {
+        var q = filtros.busqueda.toLowerCase();
+        var coincide =
+          (p.clienteNombre || '').toLowerCase().indexOf(q) !== -1 ||
+          (p.notas || '').toLowerCase().indexOf(q) !== -1;
+        if (!coincide) return false;
+      }
+      if (filtros.metodo && (p.metodo || '') !== filtros.metodo) return false;
+      if (filtros.estado && (p.estado || '').toUpperCase() !== filtros.estado) return false;
+      return true;
+    });
+    renderPagos(lista);
+  }
+
+  function poblarMetodos() {
+    var set = {};
+    PAGOS.forEach(function (p) { if (p.metodo) set[p.metodo] = true; });
+    var sel = document.getElementById('filtro-metodo');
+    Object.keys(set).sort().forEach(function (m) {
+      var opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = m;
+      sel.appendChild(opt);
+    });
+  }
+
+  document.getElementById('filtro-busqueda').addEventListener('input', function (e) {
+    filtros.busqueda = e.target.value.trim();
+    aplicarFiltros();
+  });
+  document.getElementById('filtro-metodo').addEventListener('change', function (e) {
+    filtros.metodo = e.target.value;
+    aplicarFiltros();
+  });
+  document.getElementById('filtro-estado').addEventListener('change', function (e) {
+    filtros.estado = e.target.value.toUpperCase();
+    aplicarFiltros();
+  });
+
+  // ==========================================
+  // ACCIONES POR FILA
+  // ==========================================
+  function bindAcciones() {
+    document.querySelectorAll('.btn-ver').forEach(function (btn) {
+      btn.onclick = function () {
+        var p = buscarPago(btn.dataset.id);
+        if (!p) return;
+        Swal.fire(Object.assign(swalTheme(), {
+          title: 'Pago #' + p.id,
+          html:
+            '<div class="text-left text-xs space-y-1.5">' +
+            '<div><span class="text-slate-400">Cliente:</span> ' + (p.clienteNombre || '—') + '</div>' +
+            '<div><span class="text-slate-400">Monto:</span> ' + formatearMonto(p.moneda, p.monto) + '</div>' +
+            '<div><span class="text-slate-400">Método:</span> ' + (p.metodo || '—') + '</div>' +
+            '<div><span class="text-slate-400">Estado:</span> ' + (p.estado || '—') + '</div>' +
+            '<div><span class="text-slate-400">Fecha:</span> ' + formatearFecha(p.fecha) + '</div>' +
+            '<div><span class="text-slate-400">Notas:</span> ' + (p.notas || '—') + '</div>' +
+            '</div>',
+          confirmButtonText: 'Cerrar'
+        }));
+      };
+    });
+
+    document.querySelectorAll('.btn-editar').forEach(function (btn) {
+      btn.onclick = function () {
+        var p = buscarPago(btn.dataset.id);
+        if (!p) return;
+        Swal.fire(Object.assign(swalTheme(), {
+          title: 'Editar pago',
+          html:
+            '<input id="e-monto" type="number" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Monto" value="' + (p.monto || 0) + '">' +
+            '<input id="e-moneda" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Moneda" value="' + (p.moneda || 'BOB') + '">' +
+            '<input id="e-metodo" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Método" value="' + (p.metodo || '') + '">' +
+            '<select id="e-estado" class="swal2-input !bg-slate-800 !text-white !border-slate-700">' +
+              '<option value="PAGADO"' + (p.estado === 'PAGADO' ? ' selected' : '') + '>Pagado</option>' +
+              '<option value="PENDIENTE"' + (p.estado === 'PENDIENTE' ? ' selected' : '') + '>Pendiente</option>' +
+              '<option value="ANULADO"' + (p.estado === 'ANULADO' ? ' selected' : '') + '>Anulado</option>' +
+            '</select>' +
+            '<input id="e-notas" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Notas" value="' + (p.notas || '') + '">',
+          focusConfirm: false,
+          showCancelButton: true,
+          confirmButtonText: 'Guardar',
+          cancelButtonText: 'Cancelar',
+          reverseButtons: true,
+          preConfirm: function () {
+            var monto = document.getElementById('e-monto').value;
+            if (!monto || Number(monto) <= 0) {
+              Swal.showValidationMessage('Ingresá un monto válido.');
+              return false;
+            }
+            return {
+              id: p.id,
+              monto: monto,
+              moneda: document.getElementById('e-moneda').value.trim(),
+              metodo: document.getElementById('e-metodo').value.trim(),
+              estado: document.getElementById('e-estado').value,
+              notas: document.getElementById('e-notas').value.trim()
+            };
+          }
+        })).then(function (r) {
+          if (!r.isConfirmed) return;
+          llamarControlador('Pagos@actualizar', r.value, 'Guardando...')
+            .then(function (resp) {
+              if (resp && resp.success) {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Guardado', text: resp.message }))
+                  .then(function () { window.top.location.reload(); });
+              } else {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'Error', text: (resp && resp.message) || 'No se pudo guardar.' }));
+              }
+            })
+            .catch(mostrarError);
+        });
+      };
+    });
+
+    document.querySelectorAll('.btn-eliminar').forEach(function (btn) {
+      btn.onclick = function () {
+        var p = buscarPago(btn.dataset.id);
+        if (!p) return;
+        Swal.fire(Object.assign(swalTheme(), {
+          icon: 'warning',
+          title: '¿Eliminar este pago?',
+          text: 'Se eliminará el pago de ' + formatearMonto(p.moneda, p.monto) + ' de ' + p.clienteNombre + '.',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+          reverseButtons: true
+        })).then(function (r) {
+          if (!r.isConfirmed) return;
+          llamarControlador('Pagos@eliminar', { id: p.id }, 'Eliminando...')
+            .then(function (resp) {
+              if (resp && resp.success) {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Eliminado', text: resp.message }))
+                  .then(function () { window.top.location.reload(); });
+              } else {
+                Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'Error', text: (resp && resp.message) || 'No se pudo eliminar.' }));
+              }
+            })
+            .catch(mostrarError);
+        });
+      };
+    });
+  }
+
+  // ==========================================
+  // REGISTRAR PAGO
+  // ==========================================
+  document.getElementById('btn-registrar-pago').addEventListener('click', function () {
+    if (CLIENTES.length === 0) {
+      Swal.fire(Object.assign(swalTheme(), { icon: 'info', title: 'Sin clientes', text: 'Creá un cliente primero.' }));
+      return;
+    }
+    var opciones = CLIENTES.map(function (c) {
+      return '<option value="' + c.id + '">' + c.nombre + '</option>';
+    }).join('');
+
+    Swal.fire(Object.assign(swalTheme(), {
+      title: 'Registrar pago',
+      html:
+        '<select id="p-cliente" class="swal2-input !bg-slate-800 !text-white !border-slate-700">' + opciones + '</select>' +
+        '<input id="p-monto" type="number" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Monto">' +
+        '<input id="p-moneda" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Moneda" value="BOB">' +
+        '<input id="p-metodo" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Método (USDT, QR, Transferencia...)">' +
+        '<select id="p-estado" class="swal2-input !bg-slate-800 !text-white !border-slate-700">' +
+          '<option value="PAGADO">Pagado</option>' +
+          '<option value="PENDIENTE">Pendiente</option>' +
+        '</select>' +
+        '<input id="p-notas" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Notas (opcional)">',
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+      preConfirm: function () {
+        var monto = document.getElementById('p-monto').value;
+        if (!monto || Number(monto) <= 0) {
+          Swal.showValidationMessage('Ingresá un monto válido.');
+          return false;
+        }
+        return {
+          clientId: document.getElementById('p-cliente').value,
+          monto: monto,
+          moneda: document.getElementById('p-moneda').value.trim(),
+          metodo: document.getElementById('p-metodo').value.trim(),
+          estado: document.getElementById('p-estado').value,
+          notas: document.getElementById('p-notas').value.trim()
+        };
+      }
+    })).then(function (r) {
+      if (!r.isConfirmed) return;
+      llamarControlador('Pagos@crear', r.value, 'Registrando pago...')
+        .then(function (resp) {
+          if (resp && resp.success) {
+            Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Pago registrado', text: resp.message }))
+              .then(function () { window.top.location.reload(); });
+          } else {
+            Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'No se pudo registrar', text: (resp && resp.message) || 'Error inesperado.' }));
+          }
+        })
+        .catch(mostrarError);
+    });
+  });
+
+  // ==========================================
+  // INIT
+  // ==========================================
+  poblarMetodos();
+  renderPagos(PAGOS);
+</script>
