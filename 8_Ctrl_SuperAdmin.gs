@@ -35,6 +35,26 @@ class Ctrl_SuperAdmin extends Base_Controller {
         return String(u.ID) === String(userId);
       }) || {};
 
+      // Clientes + suscripciones reales (reutiliza Ctrl_Clientes.listar())
+      var respClientes = new Ctrl_Clientes().listar();
+      var clientes = respClientes.success ? respClientes.clientes : [];
+
+      // Pagos reales (reutiliza Ctrl_Pagos.listar())
+      var respPagos = new Ctrl_Pagos().listar();
+      var pagos = respPagos.success ? respPagos.pagos : [];
+
+      // Métricas reales calculadas sobre los clientes
+      var metrics = {
+        mrr: clientes.reduce(function (acc, c) {
+          return acc + (c.estadoCalculado !== 'INACTIVO' ? (Number(c.monto) || 0) : 0);
+        }, 0),
+        activos: clientes.filter(function (c) { return c.estadoCalculado === 'ACTIVO'; }).length,
+        porVencer: clientes.filter(function (c) { return c.estadoCalculado === 'POR_VENCER'; }).length,
+        bloqueados: clientes.filter(function (c) {
+          return c.estadoCalculado === 'VENCIDO' || c.estadoCalculado === 'SUSPENDIDO' || c.estadoCalculado === 'INACTIVO';
+        }).length
+      };
+
       var data = {
         title: CONFIG.APP_NAME + ' · Dashboard',
         appName: CONFIG.APP_NAME,
@@ -45,7 +65,10 @@ class Ctrl_SuperAdmin extends Base_Controller {
           email: userEmail,
           rol: userRol,
           nombre: usuario.NOMBRE || 'Usuario'
-        }
+        },
+        clientes: clientes,
+        pagos: pagos,
+        metrics: metrics
       };
 
       return this.view('Dashboard', data, 'Layout_Main');
