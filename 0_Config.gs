@@ -19,7 +19,10 @@ var CONFIG = {
   DB: {
     USERS: 'USERS',
     SESSIONS: 'SESSIONS',
-    LOGS: 'LOGS'
+    LOGS: 'LOGS',
+    CLIENTS: 'Clients',
+    SUBSCRIPTIONS: 'Subscriptions',
+    PAYMENTS: 'Payments'
   },
 
   // Seguridad
@@ -36,6 +39,24 @@ var CONFIG = {
   }
 
 };
+
+/**
+ * ID del Spreadsheet TEMPLATE (11 tabs: Leads, Sales, Campaigns,
+ * AdSets, Ads, Budgets, Reports, Clients, Tasks, Settings, Tokens)
+ * que se clona para cada cliente nuevo.
+ *
+ * Se autodetecta: instalarTemplate() (0_Install_Template.gs) lo
+ * guarda en Script Properties apenas lo crea, y CONFIG.TEMPLATE_ID
+ * lo lee de ahí automáticamente. No hace falta copiar/pegar el ID
+ * a mano.
+ */
+Object.defineProperty(CONFIG, 'TEMPLATE_ID', {
+  get: function () {
+    return PropertiesService.getScriptProperties().getProperty('TEMPLATE_ID') || '';
+  },
+  enumerable: true,
+  configurable: true
+});
 
 function getConfig() {
   return CONFIG;
