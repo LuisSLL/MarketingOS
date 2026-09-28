@@ -1,22 +1,18 @@
+<!-- Blob de datos para las acciones del lado del cliente (JS) -->
+<script>
+  var CLIENTES = <?!= JSON.stringify(clientes) ?>;
+</script>
+
 <!-- ENCABEZADO DE LA PÁGINA -->
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-8">
   <div>
     <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Panel de Super Admin</h1>
-    <p class="mt-1 text-slate-400 text-sm">
-      Resumen y gestión de suscripciones • Bolivia
-    </p>
-  </div>
-
-  <!-- Selector de Fecha -->
-  <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-300 text-xs md:text-sm w-fit">
-    <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
-    <span>Hoy · 25 sept 2024 · La Paz</span>
+    <p class="mt-1 text-slate-400 text-sm">Resumen y gestión de clientes, suscripciones y pagos.</p>
   </div>
 </div>
 
-<!-- TARJETAS DE MÉTRICAS (1 col en móvil, 2 en tablet, 4 en desktop) -->
+<!-- TARJETAS DE MÉTRICAS (reales) -->
 <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-  <!-- MRR -->
   <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
     <div class="flex items-center gap-2 mb-2">
       <div class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-900/50 text-indigo-400">
@@ -24,26 +20,21 @@
       </div>
       <span class="text-xs font-medium uppercase tracking-wide text-slate-400">MRR</span>
     </div>
-    <div class="text-xl md:text-2xl font-bold text-white">Bs 5.100</div>
-    <div class="mt-1 text-xs text-emerald-400 flex items-center gap-1">
-      <i data-lucide="trending-up" class="w-3 h-3"></i>
-      +12% vs mes ant.
-    </div>
+    <div class="text-xl md:text-2xl font-bold text-white"><?= metrics.mrr ?></div>
+    <div class="mt-1 text-xs text-slate-500">suma de suscripciones activas</div>
   </div>
 
-  <!-- Pagados -->
   <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
     <div class="flex items-center gap-2 mb-2">
       <div class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-900/50 text-emerald-400">
         <i data-lucide="check-circle" class="w-3 h-3"></i>
       </div>
-      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Pagados</span>
+      <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Activos</span>
     </div>
-    <div class="text-xl md:text-2xl font-bold text-white">11</div>
-    <div class="mt-1 text-xs text-slate-500">clientes activos</div>
+    <div class="text-xl md:text-2xl font-bold text-white"><?= metrics.activos ?></div>
+    <div class="mt-1 text-xs text-slate-500">clientes al día</div>
   </div>
 
-  <!-- Por Vencer -->
   <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
     <div class="flex items-center gap-2 mb-2">
       <div class="flex h-6 w-6 items-center justify-center rounded-full bg-amber-900/50 text-amber-400">
@@ -51,11 +42,10 @@
       </div>
       <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Por Vencer</span>
     </div>
-    <div class="text-xl md:text-2xl font-bold text-white">2</div>
-    <div class="mt-1 text-xs text-amber-400">vencen en 7 días</div>
+    <div class="text-xl md:text-2xl font-bold text-white"><?= metrics.porVencer ?></div>
+    <div class="mt-1 text-xs text-amber-400">vencen en ≤ 7 días</div>
   </div>
 
-  <!-- Bloqueados -->
   <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
     <div class="flex items-center gap-2 mb-2">
       <div class="flex h-6 w-6 items-center justify-center rounded-full bg-rose-900/50 text-rose-400">
@@ -63,30 +53,29 @@
       </div>
       <span class="text-xs font-medium uppercase tracking-wide text-slate-400">Bloqueados</span>
     </div>
-    <div class="text-xl md:text-2xl font-bold text-white">2</div>
-    <div class="mt-1 text-xs text-rose-400">requieren atención</div>
+    <div class="text-xl md:text-2xl font-bold text-white"><?= metrics.bloqueados ?></div>
+    <div class="mt-1 text-xs text-rose-400">vencidos / suspendidos / inactivos</div>
   </div>
 </div>
 
 <!-- TABLA DE CLIENTES -->
-<div class="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+<div class="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden mb-8">
   <div class="px-4 md:px-5 py-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
     <h2 class="font-semibold text-white">Clientes y Suscripciones</h2>
     <div class="flex items-center gap-2 w-full sm:w-auto">
-      <div class="relative flex-1 sm:flex-none">
-        <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
-        <input type="text" placeholder="Buscar..." class="bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 w-full sm:w-48">
-      </div>
-      <button class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap">
+      <button id="btn-registrar-pago" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap">
+        <i data-lucide="receipt" class="w-3 h-3"></i>
+        Registrar pago
+      </button>
+      <button id="btn-nuevo-cliente" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap">
         <i data-lucide="plus" class="w-3 h-3"></i>
         Nuevo
       </button>
     </div>
   </div>
-  
-  <!-- Scroll Horizontal en Móvil -->
+
   <div class="overflow-x-auto">
-    <table class="w-full text-left text-xs min-w-[800px]">
+    <table class="w-full text-left text-xs min-w-[900px]">
       <thead class="bg-slate-950/50 text-slate-500 uppercase tracking-wider font-medium">
         <tr>
           <th class="px-4 md:px-5 py-3">Cliente</th>
@@ -100,145 +89,428 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-slate-800">
-        <!-- Fila 1 -->
+        <? if (clientes.length === 0) { ?>
+        <tr>
+          <td colspan="8" class="px-5 py-6 text-center text-slate-500">
+            Todavía no hay clientes. Usá "Nuevo" para crear el primero.
+          </td>
+        </tr>
+        <? } ?>
+        <? for (var i = 0; i < clientes.length; i++) { var c = clientes[i];
+             var badge = { ACTIVO: ['emerald', 'Activo'], POR_VENCER: ['amber', 'Por Vencer'],
+                           VENCIDO: ['rose', 'Vencido'], SUSPENDIDO: ['rose', 'Suspendido'],
+                           INACTIVO: ['slate', 'Inactivo'] }[c.estadoCalculado] || ['slate', c.estadoCalculado];
+             var venceTxt = c.vence ? Utilities.formatDate(new Date(c.vence), Session.getScriptTimeZone(), 'dd MMM yyyy') : '—';
+        ?>
         <tr class="hover:bg-slate-800/30 transition-colors">
           <td class="px-4 md:px-5 py-3">
             <div class="flex items-center gap-2">
               <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
                 <i data-lucide="building-2" class="w-3 h-3"></i>
               </div>
-              <span class="font-medium text-slate-200 whitespace-nowrap">Empresa Andina SRL</span>
-            </div>
-          </td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">La Paz</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-900/30 text-purple-300 border border-purple-800/50 whitespace-nowrap">Profesional</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">25 sept 2024</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>Pagado</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 800</td>
-          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="circle-dollar-sign" class="w-3 h-3"></i> USDT</span></td>
-          <td class="px-4 md:px-5 py-3 text-right">
-            <div class="flex items-center justify-end gap-2">
-              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
-              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Fila 2 -->
-        <tr class="hover:bg-slate-800/30 transition-colors">
-          <td class="px-4 md:px-5 py-3">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
-                <i data-lucide="building-2" class="w-3 h-3"></i>
+              <div class="min-w-0">
+                <div class="font-medium text-slate-200 whitespace-nowrap"><?= c.nombre ?></div>
+                <div class="text-[10px] text-slate-500 whitespace-nowrap"><?= c.email ?></div>
               </div>
-              <span class="font-medium text-slate-200 whitespace-nowrap">TecnoBol Ltda</span>
             </div>
           </td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">Santa Cruz</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-900/30 text-blue-300 border border-blue-800/50 whitespace-nowrap">Starter</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">28 sept 2024</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-900/30 text-amber-400 border border-amber-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>Por Vencer</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 400</td>
-          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="qr-code" class="w-3 h-3"></i> QR</span></td>
-          <td class="px-4 md:px-5 py-3 text-right">
-            <div class="flex items-center justify-end gap-2">
-              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
-              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
-            </div>
-          </td>
-        </tr>
-
-        <!-- Fila 3 -->
-        <tr class="hover:bg-slate-800/30 transition-colors">
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap"><?= c.ciudad || '—' ?></td>
+          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-900/30 text-purple-300 border border-purple-800/50 whitespace-nowrap"><?= c.plan || '—' ?></span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap"><?= venceTxt ?></td>
           <td class="px-4 md:px-5 py-3">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
-                <i data-lucide="building-2" class="w-3 h-3"></i>
-              </div>
-              <span class="font-medium text-slate-200 whitespace-nowrap">AgroValle SA</span>
-            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-<?= badge[0] ?>-900/30 text-<?= badge[0] ?>-400 border border-<?= badge[0] ?>-800/50 flex items-center gap-1 w-fit whitespace-nowrap">
+              <div class="w-1.5 h-1.5 rounded-full bg-<?= badge[0] ?>-400"></div><?= badge[1] ?>
+            </span>
           </td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">Cochabamba</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-fuchsia-900/30 text-fuchsia-300 border border-fuchsia-800/50 whitespace-nowrap">Empresarial</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">22 sept 2024</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-rose-900/30 text-rose-400 border border-rose-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-rose-400"></div>Bloqueado</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 1500</td>
-          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="arrow-right-left" class="w-3 h-3"></i> Transf.</span></td>
+          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap"><?= c.moneda ?> <?= c.monto ?></td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap"><?= c.metodoPago || '—' ?></td>
           <td class="px-4 md:px-5 py-3 text-right">
-            <div class="flex items-center justify-end gap-2">
-              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
-              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
+            <div class="flex items-center justify-end gap-1">
+              <button class="btn-ver p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white" data-id="<?= c.id ?>" title="Ver">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="btn-editar p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white" data-id="<?= c.id ?>" title="Editar">
+                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="btn-estado p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-white" data-id="<?= c.id ?>" title="Cambiar estado">
+                <i data-lucide="toggle-left" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="btn-eliminar p-1.5 rounded hover:bg-rose-950/40 text-rose-500 hover:text-rose-400" data-id="<?= c.id ?>" title="Eliminar">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
             </div>
           </td>
         </tr>
-         <!-- Fila 4 -->
-         <tr class="hover:bg-slate-800/30 transition-colors">
-          <td class="px-4 md:px-5 py-3">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
-                <i data-lucide="building-2" class="w-3 h-3"></i>
-              </div>
-              <span class="font-medium text-slate-200 whitespace-nowrap">Creativa Labs</span>
-            </div>
-          </td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">Santa Cruz</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-900/30 text-blue-300 border border-blue-800/50 whitespace-nowrap">Starter</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">30 sept 2024</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>Pagado</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 300</td>
-          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="circle-dollar-sign" class="w-3 h-3"></i> USDT</span></td>
-          <td class="px-4 md:px-5 py-3 text-right">
-            <div class="flex items-center justify-end gap-2">
-              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
-              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
-            </div>
-          </td>
-        </tr>
-         <!-- Fila 5 -->
-         <tr class="hover:bg-slate-800/30 transition-colors">
-          <td class="px-4 md:px-5 py-3">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded bg-indigo-900/50 flex items-center justify-center text-indigo-400 shrink-0">
-                <i data-lucide="building-2" class="w-3 h-3"></i>
-              </div>
-              <span class="font-medium text-slate-200 whitespace-nowrap">SolNorte Bolivia</span>
-            </div>
-          </td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">La Paz</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-purple-900/30 text-purple-300 border border-purple-800/50 whitespace-nowrap">Profesional</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap">27 sept 2024</td>
-          <td class="px-4 md:px-5 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-900/30 text-amber-400 border border-amber-800/50 flex items-center gap-1 w-fit whitespace-nowrap"><div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>Por Vencer</span></td>
-          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap">Bs 900</td>
-          <td class="px-4 md:px-5 py-3"><span class="flex items-center gap-1 text-slate-400 whitespace-nowrap"><i data-lucide="arrow-right-left" class="w-3 h-3"></i> Transf.</span></td>
-          <td class="px-4 md:px-5 py-3 text-right">
-            <div class="flex items-center justify-end gap-2">
-              <button class="text-emerald-400 hover:text-emerald-300 bg-emerald-900/20 px-2 py-1 rounded text-[10px] border border-emerald-900/50 whitespace-nowrap">Pagado</button>
-              <button class="text-rose-400 hover:text-rose-300 bg-rose-900/20 px-2 py-1 rounded text-[10px] border border-rose-900/50 whitespace-nowrap">Bloquear</button>
-            </div>
-          </td>
-        </tr>
-
+        <? } ?>
       </tbody>
     </table>
   </div>
-  
-  <!-- Footer de la Tabla / Cobranza -->
-  <div class="px-4 md:px-5 py-3 border-t border-slate-800 bg-slate-900">
-     <div class="flex items-center justify-between text-xs mb-1">
-        <span class="font-medium text-slate-300">Cobranza del Mes — 73% cobrado</span>
-     </div>
-     <div class="flex items-center gap-3">
-        <div class="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-            <div class="h-full bg-indigo-500 rounded-full" style="width: 73%"></div>
-        </div>
-        <span class="text-xs font-bold text-indigo-400">73%</span>
-     </div>
-     <div class="mt-1 text-[10px] text-slate-500">Bs 3.900 cobrado de Bs 5.100 objetivo</div>
-  </div>
+</div>
 
+<!-- TABLA DE PAGOS -->
+<div class="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden">
+  <div class="px-4 md:px-5 py-4 border-b border-slate-800">
+    <h2 class="font-semibold text-white">Pagos</h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-xs min-w-[700px]">
+      <thead class="bg-slate-950/50 text-slate-500 uppercase tracking-wider font-medium">
+        <tr>
+          <th class="px-4 md:px-5 py-3">Cliente</th>
+          <th class="px-4 md:px-5 py-3">Monto</th>
+          <th class="px-4 md:px-5 py-3">Método</th>
+          <th class="px-4 md:px-5 py-3">Estado</th>
+          <th class="px-4 md:px-5 py-3">Fecha</th>
+          <th class="px-4 md:px-5 py-3 text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-800">
+        <? if (pagos.length === 0) { ?>
+        <tr><td colspan="6" class="px-5 py-6 text-center text-slate-500">Todavía no hay pagos registrados.</td></tr>
+        <? } ?>
+        <? for (var j = 0; j < pagos.length; j++) { var p = pagos[j];
+             var pagoBadge = p.estado === 'PAGADO' ? 'emerald' : p.estado === 'PENDIENTE' ? 'amber' : 'rose';
+             var fechaTxt = p.fecha ? Utilities.formatDate(new Date(p.fecha), Session.getScriptTimeZone(), 'dd MMM yyyy') : '—';
+        ?>
+        <tr class="hover:bg-slate-800/30 transition-colors">
+          <td class="px-4 md:px-5 py-3 text-slate-200 whitespace-nowrap"><?= p.clienteNombre ?></td>
+          <td class="px-4 md:px-5 py-3 text-slate-200 font-medium whitespace-nowrap"><?= p.moneda ?> <?= p.monto ?></td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap"><?= p.metodo || '—' ?></td>
+          <td class="px-4 md:px-5 py-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-<?= pagoBadge ?>-900/30 text-<?= pagoBadge ?>-400 border border-<?= pagoBadge ?>-800/50 whitespace-nowrap"><?= p.estado ?></span>
+          </td>
+          <td class="px-4 md:px-5 py-3 text-slate-400 whitespace-nowrap"><?= fechaTxt ?></td>
+          <td class="px-4 md:px-5 py-3 text-right">
+            <button class="btn-pago-eliminar p-1.5 rounded hover:bg-rose-950/40 text-rose-500 hover:text-rose-400" data-id="<?= p.id ?>" title="Eliminar">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </td>
+        </tr>
+        <? } ?>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>
-    // Re-inicializar iconos para el contenido inyectado
-    lucide.createIcons();
+  lucide.createIcons();
+
+  function buscarCliente(id) {
+    return CLIENTES.find(function (c) { return String(c.id) === String(id); });
+  }
+
+  function llamarControlador(ruta, params, mensajeCargando) {
+    return new Promise(function (resolve, reject) {
+      if (mensajeCargando) {
+        Swal.fire(Object.assign(swalTheme(), {
+          title: mensajeCargando,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: function () { Swal.showLoading(); }
+        }));
+      }
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject)
+        .ejecutarController(ruta, params || {});
+    });
+  }
+
+  function mostrarError(err) {
+    Swal.fire(Object.assign(swalTheme(), {
+      icon: 'error',
+      title: 'Error',
+      text: (err && err.message) || (err && err.error) || String(err)
+    }));
+  }
+
+  // ==========================================
+  // NUEVO CLIENTE
+  // ==========================================
+  document.getElementById('btn-nuevo-cliente').addEventListener('click', function () {
+    Swal.fire(Object.assign(swalTheme(), {
+      title: 'Nuevo cliente',
+      html:
+        '<input id="swal-nombre" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Nombre del cliente">' +
+        '<input id="swal-email" type="email" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Email del cliente">' +
+        '<input id="swal-telefono" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Teléfono (opcional)">' +
+        '<input id="swal-ciudad" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Ciudad (opcional)">' +
+        '<input id="swal-plan" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Plan (ej: Starter)" value="Starter">' +
+        '<input id="swal-monto" type="number" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Monto mensual" value="0">',
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Crear cliente',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+      preConfirm: function () {
+        var nombre = document.getElementById('swal-nombre').value.trim();
+        var email = document.getElementById('swal-email').value.trim();
+        if (!nombre || !email) {
+          Swal.showValidationMessage('Nombre y email son obligatorios.');
+          return false;
+        }
+        return {
+          nombre: nombre,
+          email: email,
+          telefono: document.getElementById('swal-telefono').value.trim(),
+          ciudad: document.getElementById('swal-ciudad').value.trim(),
+          plan: document.getElementById('swal-plan').value.trim(),
+          monto: document.getElementById('swal-monto').value
+        };
+      }
+    })).then(function (result) {
+      if (!result.isConfirmed) return;
+
+      llamarControlador('Clientes@crear', result.value, 'Creando cliente... clonando plantilla y generando acceso.')
+        .then(function (response) {
+          if (response && response.success) {
+            Swal.fire(Object.assign(swalTheme(), {
+              icon: 'success',
+              title: 'Cliente creado',
+              html:
+                '<p class="mb-3">' + response.message + '</p>' +
+                '<div class="text-left bg-slate-800 rounded-lg p-3 text-xs space-y-1">' +
+                '<div><span class="text-slate-400">Email:</span> <span class="text-white font-medium">' + response.clientEmail + '</span></div>' +
+                '<div><span class="text-slate-400">Contraseña:</span> <span class="text-white font-medium">' + response.clientPassword + '</span></div>' +
+                '</div>' +
+                '<p class="mt-3 text-[11px] text-amber-400">Copiá estos datos ahora: no se van a volver a mostrar.</p>',
+              confirmButtonText: 'Listo'
+            })).then(function () { window.top.location.reload(); });
+          } else {
+            Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'No se pudo crear', text: (response && response.message) || 'Error inesperado.' }));
+          }
+        })
+        .catch(mostrarError);
+    });
+  });
+
+  // ==========================================
+  // VER CLIENTE
+  // ==========================================
+  document.querySelectorAll('.btn-ver').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var c = buscarCliente(btn.dataset.id);
+      if (!c) return;
+      Swal.fire(Object.assign(swalTheme(), {
+        title: c.nombre,
+        html:
+          '<div class="text-left text-xs space-y-1.5">' +
+          '<div><span class="text-slate-400">Email:</span> ' + c.email + '</div>' +
+          '<div><span class="text-slate-400">Teléfono:</span> ' + (c.telefono || '—') + '</div>' +
+          '<div><span class="text-slate-400">Ciudad:</span> ' + (c.ciudad || '—') + '</div>' +
+          '<div><span class="text-slate-400">Plan:</span> ' + (c.plan || '—') + '</div>' +
+          '<div><span class="text-slate-400">Monto:</span> ' + c.moneda + ' ' + c.monto + '</div>' +
+          '<div><span class="text-slate-400">Método de pago:</span> ' + (c.metodoPago || '—') + '</div>' +
+          '<div><span class="text-slate-400">Vence:</span> ' + (c.vence ? c.vence.slice(0, 10) : '—') + '</div>' +
+          '<div><span class="text-slate-400">Estado:</span> ' + c.estadoCalculado + '</div>' +
+          '<div><span class="text-slate-400">Spreadsheet ID:</span> ' + c.spreadsheetId + '</div>' +
+          '</div>',
+        confirmButtonText: 'Cerrar'
+      }));
+    });
+  });
+
+  // ==========================================
+  // EDITAR CLIENTE
+  // ==========================================
+  document.querySelectorAll('.btn-editar').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var c = buscarCliente(btn.dataset.id);
+      if (!c) return;
+
+      Swal.fire(Object.assign(swalTheme(), {
+        title: 'Editar cliente',
+        html:
+          '<input id="e-nombre" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Nombre" value="' + c.nombre + '">' +
+          '<input id="e-email" type="email" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Email" value="' + c.email + '">' +
+          '<input id="e-telefono" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Teléfono" value="' + (c.telefono || '') + '">' +
+          '<input id="e-ciudad" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Ciudad" value="' + (c.ciudad || '') + '">' +
+          '<input id="e-plan" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Plan" value="' + (c.plan || '') + '">' +
+          '<input id="e-monto" type="number" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Monto" value="' + c.monto + '">' +
+          '<input id="e-vence" type="date" class="swal2-input !bg-slate-800 !text-white !border-slate-700" value="' + (c.vence ? c.vence.slice(0, 10) : '') + '">',
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        preConfirm: function () {
+          var nombre = document.getElementById('e-nombre').value.trim();
+          var email = document.getElementById('e-email').value.trim();
+          if (!nombre || !email) {
+            Swal.showValidationMessage('Nombre y email son obligatorios.');
+            return false;
+          }
+          return {
+            id: c.id,
+            nombre: nombre,
+            email: email,
+            telefono: document.getElementById('e-telefono').value.trim(),
+            ciudad: document.getElementById('e-ciudad').value.trim(),
+            plan: document.getElementById('e-plan').value.trim(),
+            monto: document.getElementById('e-monto').value,
+            vence: document.getElementById('e-vence').value
+          };
+        }
+      })).then(function (result) {
+        if (!result.isConfirmed) return;
+        llamarControlador('Clientes@actualizar', result.value, 'Guardando cambios...')
+          .then(function (response) {
+            if (response && response.success) {
+              Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Guardado', text: response.message }))
+                .then(function () { window.top.location.reload(); });
+            } else {
+              Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'No se pudo guardar', text: (response && response.message) || 'Error inesperado.' }));
+            }
+          })
+          .catch(mostrarError);
+      });
+    });
+  });
+
+  // ==========================================
+  // CAMBIAR ESTADO (activar / desactivar / suspender)
+  // ==========================================
+  document.querySelectorAll('.btn-estado').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var c = buscarCliente(btn.dataset.id);
+      if (!c) return;
+
+      Swal.fire(Object.assign(swalTheme(), {
+        title: 'Cambiar estado — ' + c.nombre,
+        input: 'select',
+        inputOptions: { ACTIVO: 'Activo', SUSPENDIDO: 'Suspendido', INACTIVO: 'Inactivo (desactivado)' },
+        inputValue: c.estadoCliente,
+        showCancelButton: true,
+        confirmButtonText: 'Cambiar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true
+      })).then(function (result) {
+        if (!result.isConfirmed) return;
+        llamarControlador('Clientes@cambiarEstado', { id: c.id, estado: result.value }, 'Actualizando estado...')
+          .then(function (response) {
+            if (response && response.success) {
+              Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Listo', text: response.message }))
+                .then(function () { window.top.location.reload(); });
+            } else {
+              Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'No se pudo cambiar', text: (response && response.message) || 'Error inesperado.' }));
+            }
+          })
+          .catch(mostrarError);
+      });
+    });
+  });
+
+  // ==========================================
+  // ELIMINAR CLIENTE
+  // ==========================================
+  document.querySelectorAll('.btn-eliminar').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var c = buscarCliente(btn.dataset.id);
+      if (!c) return;
+
+      Swal.fire(Object.assign(swalTheme(), {
+        icon: 'warning',
+        title: '¿Eliminar a ' + c.nombre + '?',
+        text: 'Se borra de MASTER (Clients y Subscriptions). Su Spreadsheet en Drive NO se borra automáticamente. Esta acción no se puede deshacer.',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        confirmButtonColor: '#e11d48'
+      })).then(function (result) {
+        if (!result.isConfirmed) return;
+        llamarControlador('Clientes@eliminar', { id: c.id }, 'Eliminando...')
+          .then(function (response) {
+            if (response && response.success) {
+              Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Eliminado', text: response.message }))
+                .then(function () { window.top.location.reload(); });
+            } else {
+              Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'No se pudo eliminar', text: (response && response.message) || 'Error inesperado.' }));
+            }
+          })
+          .catch(mostrarError);
+      });
+    });
+  });
+
+  // ==========================================
+  // REGISTRAR PAGO
+  // ==========================================
+  document.getElementById('btn-registrar-pago').addEventListener('click', function () {
+    if (CLIENTES.length === 0) {
+      Swal.fire(Object.assign(swalTheme(), { icon: 'info', title: 'Sin clientes', text: 'Creá un cliente primero.' }));
+      return;
+    }
+    var opciones = CLIENTES.map(function (c) { return '<option value="' + c.id + '">' + c.nombre + '</option>'; }).join('');
+
+    Swal.fire(Object.assign(swalTheme(), {
+      title: 'Registrar pago',
+      html:
+        '<select id="p-cliente" class="swal2-input !bg-slate-800 !text-white !border-slate-700">' + opciones + '</select>' +
+        '<input id="p-monto" type="number" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Monto">' +
+        '<input id="p-moneda" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Moneda (ej: BOB)" value="BOB">' +
+        '<input id="p-metodo" class="swal2-input !bg-slate-800 !text-white !border-slate-700" placeholder="Método (ej: Transferencia, QR, USDT)">',
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Registrar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+      preConfirm: function () {
+        var monto = document.getElementById('p-monto').value;
+        if (!monto || Number(monto) <= 0) {
+          Swal.showValidationMessage('Ingresá un monto válido.');
+          return false;
+        }
+        return {
+          clientId: document.getElementById('p-cliente').value,
+          monto: monto,
+          moneda: document.getElementById('p-moneda').value.trim(),
+          metodo: document.getElementById('p-metodo').value.trim()
+        };
+      }
+    })).then(function (result) {
+      if (!result.isConfirmed) return;
+      llamarControlador('Pagos@crear', result.value, 'Registrando pago...')
+        .then(function (response) {
+          if (response && response.success) {
+            Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Pago registrado', text: response.message }))
+              .then(function () { window.top.location.reload(); });
+          } else {
+            Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'No se pudo registrar', text: (response && response.message) || 'Error inesperado.' }));
+          }
+        })
+        .catch(mostrarError);
+    });
+  });
+
+  // ==========================================
+  // ELIMINAR PAGO
+  // ==========================================
+  document.querySelectorAll('.btn-pago-eliminar').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = btn.dataset.id;
+      Swal.fire(Object.assign(swalTheme(), {
+        icon: 'warning',
+        title: '¿Eliminar este pago?',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        confirmButtonColor: '#e11d48'
+      })).then(function (result) {
+        if (!result.isConfirmed) return;
+        llamarControlador('Pagos@eliminar', { id: id }, 'Eliminando...')
+          .then(function (response) {
+            if (response && response.success) {
+              Swal.fire(Object.assign(swalTheme(), { icon: 'success', title: 'Eliminado', text: response.message }))
+                .then(function () { window.top.location.reload(); });
+            } else {
+              Swal.fire(Object.assign(swalTheme(), { icon: 'error', title: 'No se pudo eliminar', text: (response && response.message) || 'Error inesperado.' }));
+            }
+          })
+          .catch(mostrarError);
+      });
+    });
+  });
 </script>
