@@ -13,19 +13,8 @@ class Ctrl_Pagos extends Base_Controller {
   // ==========================================
   index() {
     try {
-      var userProps = PropertiesService.getUserProperties();
-      var userEmail = userProps.getProperty('userEmail');
-      if (!userEmail) {
-        return HtmlService.createHtmlOutput(
-          '<script>window.top.location.href="' + getWebAppUrl() + '?p=login";</script>'
-        );
-      }
-
-      var userId = userProps.getProperty('userId');
-      var userRol = userProps.getProperty('userRol');
-      var usuario = Base_Model.all(CONFIG.DB.USERS).find(function (u) {
-        return String(u.ID) === String(userId);
-      }) || {};
+      var guard = sessionGuard_();
+      if (!guard.ok) return guard.response;
 
       // Traer pagos reales
       var respPagos = this.listar();
@@ -69,17 +58,7 @@ class Ctrl_Pagos extends Base_Controller {
         }
       });
 
-      var data = {
-        title: CONFIG.APP_NAME + ' · Pagos',
-        appName: CONFIG.APP_NAME,
-        appTagline: CONFIG.APP_TAGLINE,
-        scriptUrl: getWebAppUrl(),
-        user: {
-          id: userId,
-          email: userEmail,
-          rol: userRol,
-          nombre: usuario.NOMBRE || 'Usuario'
-        },
+      return this.view('Pagos', layoutData_('Pagos', 'pagos', guard.user, {
         pagos: pagos,
         clientes: clientes,
         metrics: {
@@ -88,9 +67,7 @@ class Ctrl_Pagos extends Base_Controller {
           totalPagos: totalPagos,
           metodoTop: metodoTop
         }
-      };
-
-      return this.view('Pagos', data, 'Layout_Main');
+      }), 'Layout_Main');
 
     } catch (error) {
       Logger.log('❌ Ctrl_Pagos@index: ' + error.message);
@@ -224,4 +201,4 @@ class Ctrl_Pagos extends Base_Controller {
 
 globalThis.Ctrl_Pagos = Ctrl_Pagos;
 
-Logger.log('✅ Ctrl_Pagos registrado correctamente');
+Logger.log('✅ Ctrl_Pagos registrado');
